@@ -1,18 +1,23 @@
 import { Theme } from 'vitepress'
 import Layout from './Layout.vue'
 import './style.css'
-import ElementPlus from 'element-plus'
+
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
-import zhCn from 'element-plus/es/locale/lang/zh-cn'
 
 export default {
   Layout,
-  enhanceApp({ app, router, siteData }) {
-    // 进阶：这里可以注册全局的 Vue 组件，比如你的 BassTabCard
-    // app.component('BassTabCard', BassTabCard)
-    app.use(ElementPlus, {
-      locale: zhCn
-    })
+  async enhanceApp({ app, router, siteData }) {
+    // 增加环境判断：只在客户端（浏览器环境）加载 Element Plus
+    if (!import.meta.env.SSR) {
+      // 动态异步引入 JS 模块和语言包
+      const ElementPlus = await import('element-plus')
+      const zhCn = await import('element-plus/es/locale/lang/zh-cn')
+      
+      // 注册组件（使用 .default 获取模块的默认导出）
+      app.use(ElementPlus.default || ElementPlus, {
+        locale: zhCn.default || zhCn
+      })
+    }
   }
 } satisfies Theme

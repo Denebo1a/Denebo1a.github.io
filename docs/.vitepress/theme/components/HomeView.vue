@@ -156,9 +156,7 @@ onUnmounted(() => {
         <h3 class="mb-8 text-xl font-bold text-main transition-colors">
           最新动态
         </h3>
-        <div
-          class="relative ml-3 space-y-10 border-l border-color transition-colors"
-        >
+        <div class="relative ml-3 space-y-10 transition-colors">
           <div class="relative pl-8">
             <div
               class="absolute -left-[9px] top-1 bg-base py-1 transition-colors duration-300"
