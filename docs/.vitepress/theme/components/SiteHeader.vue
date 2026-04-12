@@ -24,12 +24,20 @@ const isActive = (path) => {
       );
     "
   >
-    <div class="flex items-center">
+    <div class="flex items-center gap-1">
       <a
         href="/"
-        class="flex items-center rounded-lg px-2 py-1 text-2xl font-bold tracking-tight text-main transition-colors duration-200 hover:bg-brand-light"
+        class="flex items-center rounded-lg px-1 py-0.5 text-2xl font-bold tracking-tight text-main transition-colors duration-200 hover:bg-brand-light"
       >
         Dene<span class="text-brand">Blog</span>
+      </a>
+      <a
+        target="_blank"
+        rel="noopener noreferrer"
+        href="https://github.com/Denebo1a/Denebo1a.github.io"
+        class="flex h-8 w-8 items-center justify-center rounded-xl text-main transition-colors hover:bg-brand-light hover:text-brand"
+      >
+        <i-ant-design-github-filled class="h-5 w-5" />
       </a>
     </div>
 
