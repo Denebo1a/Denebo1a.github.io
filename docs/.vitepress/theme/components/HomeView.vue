@@ -234,24 +234,7 @@ onUnmounted(() => {
             class="flex h-full flex-col p-6 sm:p-8"
             key="blog"
           >
-            <div class="mb-4 flex items-center gap-3">
-              <span
-                class="rounded-full bg-brand px-3 py-1 text-xs font-bold text-white"
-                >实战驱动</span
-              >
-              <span class="text-sm font-bold text-main"
-                >深入理解现代 Web 架构</span
-              >
-            </div>
-            <p class="text-sm leading-relaxed text-muted">
-              没有焦虑与浮夸，只有亲身体验过，感觉不错才会推荐。涵盖 Vue3,
-              Node.js 与现代工程化的高阶用法与开发体验分享。
-            </p>
-            <div class="mt-6 flex-1 rounded-xl border border-color bg-card p-4">
-              <span class="text-xs text-muted"
-                >Blog Content Placeholder...</span
-              >
-            </div>
+            <h3 class="mb-4 text-xl font-bold text-main">占位符</h3>
           </div>
 
           <div
@@ -259,11 +242,7 @@ onUnmounted(() => {
             class="flex h-full flex-col p-6 sm:p-8"
             key="resources"
           >
-            <h3 class="mb-4 text-xl font-bold text-main">开源项目与资源库</h3>
-            <p class="text-sm leading-relaxed text-muted">
-              这里存放了我参与整理的开源工具、UI
-              组件片段以及配置指南。开箱即用，提升开发效率。
-            </p>
+            <h3 class="mb-4 text-xl font-bold text-main">占位符</h3>
           </div>
 
           <div
@@ -271,12 +250,7 @@ onUnmounted(() => {
             class="flex h-full flex-col p-6 sm:p-8"
             key="studio"
           >
-            <h3 class="mb-4 text-xl font-bold text-main">
-              数字实验室 (Studio)
-            </h3>
-            <p class="text-sm leading-relaxed text-muted">
-              一些关于 AI 辅助编程、视觉设计和实验性交互的狂想区。
-            </p>
+            <h3 class="mb-4 text-xl font-bold text-main">占位符</h3>
           </div>
         </transition>
       </div>
