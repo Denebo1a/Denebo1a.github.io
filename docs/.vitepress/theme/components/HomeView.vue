@@ -142,11 +142,11 @@ onUnmounted(() => {
               Hi, I'm <span class="text-brand">Denebora</span>.
             </h1>
             <h2 class="text-lg font-bold text-muted transition-colors">
-              Developer / Tech Enthusiast
+              Developer / Music Enthusiast
             </h2>
 
             <p class="mt-5 leading-relaxed text-muted transition-colors">
-              欢迎来到我的个人数字花园。
+              欢迎来到Denebora的数字花园(๑╹◡╹๑)
             </p>
           </div>
         </GlowCard>

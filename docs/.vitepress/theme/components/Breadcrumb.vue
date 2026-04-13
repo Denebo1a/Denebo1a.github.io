@@ -32,14 +32,7 @@ const breadcrumbs = computed(() => {
 <template>
   <div class="drop-shadow-mds sticky top-14 z-40 w-fit">
     <div
-      class="flex h-7 max-w-[70vw] items-center gap-2 rounded-br-[1rem] px-6"
-      style="
-        background-color: color-mix(
-          in srgb,
-          var(--color-brand-light) 85%,
-          transparent
-        );
-      "
+      class="flex h-7 max-w-[70vw] items-center gap-2 rounded-br-[1rem] bg-alt px-6 shadow-md"
     >
       <span class="text-brand">
         <i-material-symbols-location-on class="h-4 w-4" />

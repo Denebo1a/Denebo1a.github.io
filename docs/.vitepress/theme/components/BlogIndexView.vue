@@ -3,8 +3,8 @@ import { ref, computed, h } from "vue";
 import { data as allPosts } from "../../../blog/posts.data";
 import { formatDate } from "../utils/format";
 
-import columnIcon from "~icons/hugeicons/layout-3-column";
-import rowIcon from "~icons/hugeicons/layout-3-row";
+import columnIcon from "~icons/material-symbols/view-apps-rounded";
+import rowIcon from "~icons/material-symbols/table-rows-rounded";
 import dateAscIcon from "~icons/ph/sort-ascending-bold";
 import dateDescIcon from "~icons/ph/sort-descending-bold";
 
@@ -113,20 +113,9 @@ const filteredPosts = computed(() => {
   });
 });
 
-// --- 类型筛选函数 ---
-const updateFilter = (type, scroll = false) => {
-  activeType.value = type;
-
-  // 修改 URL 且不刷新页面
-  const newUrl = new URL(window.location.href);
-  if (type === "all") {
-    newUrl.searchParams.delete("type");
-  } else {
-    newUrl.searchParams.set("type", type);
-  }
-
-  // 使用 replaceState 防止产生过多的历史记录堆栈
-  window.history.replaceState({ type }, "", newUrl);
+const handleTagClick = (tag) => {
+  tagQueryInput.value = [tag];
+  handleSearch();
 };
 
 // --- 自定义图标 ---
@@ -146,15 +135,15 @@ const customBlankIcon = h("div");
             :key="post.url"
             class="group flex flex-col overflow-hidden rounded-[2rem] border border-color bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-brand"
           >
-            <div class="aspect-[4/3] overflow-hidden bg-alt">
+            <div class="aspect-[16/9] overflow-hidden bg-alt">
               <img
                 :src="post.cover"
                 class="h-full w-full object-cover transition-transform duration-500 ease-in-out group-hover:scale-105"
               />
             </div>
 
-            <div class="flex flex-1 flex-col border-t border-color p-6">
-              <div class="mb-4 flex items-center gap-3">
+            <div class="flex flex-1 flex-col border-t border-color p-3 sm:p-5">
+              <div class="mb-2 flex items-center gap-3">
                 <span
                   class="rounded-full bg-brand px-2 py-0.5 text-[0.75rem] font-bold uppercase tracking-widest text-slate-100"
                 >
@@ -165,12 +154,12 @@ const customBlankIcon = h("div");
                 </span>
               </div>
 
-              <h3 class="mb-2 line-clamp-2 text-[1.2rem] font-bold text-main">
+              <h3 class="mb-2 line-clamp-2 text-lg font-bold text-main">
                 {{ post.title }}
               </h3>
 
               <p
-                class="mb-2 line-clamp-4 text-[0.8rem] leading-relaxed text-muted"
+                class="mb-3 line-clamp-4 text-[0.8rem] leading-relaxed text-muted"
               >
                 {{ post.summary }}
               </p>
@@ -180,6 +169,7 @@ const customBlankIcon = h("div");
                   <span
                     v-for="tag in post.tags.slice(0, 2)"
                     :key="tag"
+                    @click="handleTagClick(tag)"
                     class="cursor-pointer rounded-full bg-alt px-2 py-1 text-[0.7rem] font-bold text-muted hover:bg-brand-light hover:text-brand"
                   >
                     #{{ tag }}
@@ -203,7 +193,7 @@ const customBlankIcon = h("div");
           <article
             v-for="post in filteredPosts"
             :key="post.url"
-            class="group flex flex-col overflow-hidden rounded-[2rem] border border-color bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-brand md:h-64 md:flex-row"
+            class="group flex flex-col overflow-hidden rounded-[2rem] border border-color bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-brand md:h-48 md:flex-row"
           >
             <div
               class="aspect-video w-full shrink-0 overflow-hidden bg-alt md:aspect-auto md:w-72 lg:w-80"
@@ -214,35 +204,51 @@ const customBlankIcon = h("div");
               />
             </div>
 
-            <div class="flex flex-1 flex-col p-4 sm:p-6">
-              <div class="mb-4 flex items-center gap-3">
+            <div class="flex flex-1 flex-col p-3 sm:p-5">
+              <div class="mb-2 flex items-center gap-3">
                 <span
                   class="rounded-full bg-brand px-2 text-[0.75rem] font-bold uppercase tracking-widest text-slate-100"
                 >
                   {{ post.category }}
                 </span>
                 <span class="text-[0.8rem] font-bold text-muted opacity-60">
-                  {{ post.date.string }}
+                  {{ formatDate(post.date).string }}
                 </span>
               </div>
 
               <h3
-                class="mb-3 line-clamp-2 text-xl font-bold text-main transition-colors group-hover:text-brand sm:text-2xl"
+                class="mb-2 line-clamp-2 text-xl font-bold text-main transition-colors sm:text-xl"
               >
                 {{ post.title }}
               </h3>
 
               <p
-                class="mb-4 line-clamp-2 text-sm leading-relaxed text-muted sm:line-clamp-3"
+                class="mb-2 line-clamp-2 text-sm leading-relaxed text-muted sm:line-clamp-2"
               >
                 {{ post.summary }}
               </p>
-              <a
-                :href="post.url"
-                class="ml-auto mt-auto flex w-max items-center gap-2 rounded-lg px-3 py-1.5 text-sm font-bold text-brand transition-all hover:gap-3 hover:bg-brand-light"
-              >
-                阅读全文 <Icon icon="heroicons:arrow-right-16-solid" />
-              </a>
+              <div class="mt-auto flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                  <span
+                    v-for="tag in post.tags.slice(0, 5)"
+                    :key="tag"
+                    @click="handleTagClick(tag)"
+                    class="cursor-pointer rounded-full bg-alt px-2 py-1 text-[0.7rem] font-bold text-muted hover:bg-brand-light hover:text-brand"
+                  >
+                    #{{ tag }}
+                  </span>
+                  <i-ph-dots-three-outline-fill
+                    v-if="post.tags.length > 5"
+                    class="h-4 w-4 text-muted opacity-50"
+                  />
+                </div>
+                <a
+                  :href="post.url"
+                  class="flex items-center gap-1 rounded-lg px-2 py-1 text-[0.8rem] font-bold text-brand transition-all hover:gap-2 hover:bg-brand-light"
+                  ><span class="min-w-0 whitespace-nowrap">阅读全文</span>
+                  <i-ph-read-cv-logo-fill class="h-4 w-4" />
+                </a>
+              </div>
             </div>
           </article>
         </div>
@@ -315,13 +321,22 @@ const customBlankIcon = h("div");
               <i-ph-magnifying-glass-bold class="h-4 w-4 text-brand" />
               <h4 class="font-bold text-main">快捷查找</h4>
             </div>
-            <button
-              @click="handleSearch"
-              class="text-bold flex items-center justify-center gap-1 rounded-xl bg-alt px-2 py-1 text-[0.875rem] text-muted transition-colors duration-300 hover:bg-brand-light hover:text-brand"
-            >
-              <i-material-symbols-feature-search class="h-4 w-4" />
-              <span>搜索</span>
-            </button>
+            <div class="flex items-center">
+              <button
+                @click="handleSearch"
+                class="text-bold flex items-center justify-center gap-1 rounded-l-xl border border-color px-2 py-1 text-[0.875rem] text-muted transition-colors duration-300 hover:bg-brand-light hover:text-brand"
+              >
+                <i-material-symbols-prompt-suggestion-rounded class="h-4 w-4" />
+                <span>还原</span>
+              </button>
+              <button
+                @click="handleSearch"
+                class="text-bold flex items-center justify-center gap-1 rounded-r-xl border border-color px-2 py-1 text-[0.875rem] text-muted transition-colors duration-300 hover:bg-brand-light hover:text-brand"
+              >
+                <i-material-symbols-feature-search class="h-4 w-4" />
+                <span>搜索</span>
+              </button>
+            </div>
           </div>
           <div class="flex flex-col gap-2 sm:gap-2">
             <el-date-picker
