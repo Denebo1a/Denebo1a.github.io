@@ -9,7 +9,7 @@ export default createContentLoader('blog/posts/*.md', {
       .map(({ url, frontmatter }) => ({
         title: frontmatter.title,
         url,
-        date: frontmatter.date,
+        date: formatDate(frontmatter.date),
         category: frontmatter.category,
         tags: frontmatter.tags || [],
         summary: frontmatter.summary,

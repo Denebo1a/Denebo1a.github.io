@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed, h } from "vue";
-import { data as allPosts } from "../../../blog/posts.data";
+import { data as allResources } from "../../../resources/others/others.data";
 
 import columnIcon from "~icons/material-symbols/view-apps-rounded";
 import rowIcon from "~icons/material-symbols/table-rows-rounded";
@@ -22,53 +22,47 @@ const handleSearch = () => {
   dateRange.value = dateRangeInput.value;
 };
 
+const handleReset = () => {
+  searchQueryInput.value = "";
+  tagQueryInput.value = [];
+  dateRangeInput.value = [];
+  searchQuery.value = "";
+  tagQuery.value = [];
+  dateRange.value = [];
+};
+
 // --- 布局类型 ---
 const layoutTypes = [
-  {
-    type: "grid",
-    icon: columnIcon,
-  },
-  {
-    type: "list",
-    icon: rowIcon,
-  },
+  { type: "grid", icon: columnIcon },
+  { type: "list", icon: rowIcon },
 ];
 const selectedLayout = ref("grid");
 
 // --- 按日期排序 ---
 const sortOptions = [
-  {
-    label: "按日期降序",
-    value: "date",
-    icon: dateDescIcon,
-  },
-  {
-    label: "按日期升序",
-    value: "date-asc",
-    icon: dateAscIcon,
-  },
+  { label: "按日期降序", value: "date", icon: dateDescIcon },
+  { label: "按日期升序", value: "date-asc", icon: dateAscIcon },
 ];
 const selectedSort = ref("date");
 
 // --- 提取所有不重复的分类 ---
 const categories = computed(() => {
-  const cats = new Set(allPosts.map((p) => p.category).filter(Boolean));
+  const cats = new Set(allResources.map((p) => p.category).filter(Boolean));
   return ["全部", ...Array.from(cats)];
 });
 
 // --- 提取所有不重复的标签 ---
 const tags = computed(() => {
-  const tags = new Set(allPosts.flatMap((p) => p.tags || []));
-  return [...tags];
+  const tagSet = new Set(allResources.flatMap((p) => p.tags || []));
+  return [...tagSet];
 });
 
 // --- 搜索 + 分类过滤 + 日期筛选 + 排序 ---
-const filteredPosts = computed(() => {
-  // 第一步：先过滤 (Filter)
-  let result = allPosts.filter((post) => {
-    // 1. 关键字搜索
+const filteredResources = computed(() => {
+  let result = allResources.filter((post) => {
     const q = searchQuery.value.toLowerCase();
     const matchesSearch =
+      !q ||
       post.title.toLowerCase().includes(q) ||
       post.summary?.toLowerCase().includes(q);
 
@@ -79,34 +73,29 @@ const filteredPosts = computed(() => {
       ),
     );
 
-    // 2. 分类筛选
     const matchesCat =
       selectedCategory.value === "全部" ||
       post.category === selectedCategory.value;
 
-    // 3. 日期区间筛选
     let matchesDate = true;
-    // 兼容取时间戳
     const postTime = post.date.time;
-
     if (dateRange.value[0]) {
-      const startTime = new Date(dateRange.value[0]).getTime();
-      if (postTime < startTime) matchesDate = false;
+      if (postTime < new Date(dateRange.value[0]).getTime())
+        matchesDate = false;
     }
     if (dateRange.value[1]) {
-      // 加上 86399999 毫秒 (一天的毫秒数减一)，确保能包含结束日期当天的文章
-      const endTime = new Date(dateRange.value[1]).getTime() + 86399999;
-      if (postTime > endTime) matchesDate = false;
+      if (postTime > new Date(dateRange.value[1]).getTime() + 86399999)
+        matchesDate = false;
     }
 
     return matchesSearch && matchesTags && matchesCat && matchesDate;
   });
 
-  // 第二步：后排序 (Sort)
-  return result.sort((a, b) => {
-    // 根据选择的值返回升序或降序
-    return selectedSort.value === "date-asc" ? a.date.time - b.date.time : b.date.time - a.date.time;
-  });
+  return result.sort((a, b) =>
+    selectedSort.value === "date-asc"
+      ? a.date.time - b.date.time
+      : b.date.time - a.date.time,
+  );
 });
 
 const handleTagClick = (tag) => {
@@ -114,7 +103,6 @@ const handleTagClick = (tag) => {
   handleSearch();
 };
 
-// --- 自定义图标 ---
 const customBlankIcon = h("div");
 </script>
 
@@ -127,7 +115,7 @@ const customBlankIcon = h("div");
           class="grid grid-cols-1 gap-6 md:grid-cols-3"
         >
           <article
-            v-for="post in filteredPosts"
+            v-for="post in filteredResources"
             :key="post.url"
             class="group flex flex-col overflow-hidden rounded-[2rem] border border-color bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-brand"
           >
@@ -178,16 +166,18 @@ const customBlankIcon = h("div");
                 <a
                   :href="post.url"
                   class="flex items-center gap-1 rounded-lg px-2 py-1 text-[0.8rem] font-bold text-brand transition-all hover:gap-2 hover:bg-brand-light"
-                  ><span class="min-w-0 whitespace-nowrap">阅读全文</span>
-                  <i-ph-read-cv-logo-fill class="h-4 w-4" />
+                >
+                  <span class="min-w-0 whitespace-nowrap">查看资源</span>
+                  <i-ph-arrow-square-out-bold class="h-4 w-4" />
                 </a>
               </div>
             </div>
           </article>
         </div>
+
         <div v-else-if="selectedLayout === 'list'" class="flex flex-col gap-4">
           <article
-            v-for="post in filteredPosts"
+            v-for="post in filteredResources"
             :key="post.url"
             class="group flex flex-col overflow-hidden rounded-[2rem] border border-color bg-card shadow-card transition-all duration-300 hover:-translate-y-1 hover:shadow-brand md:h-48 md:flex-row"
           >
@@ -213,16 +203,15 @@ const customBlankIcon = h("div");
               </div>
 
               <h3
-                class="mb-2 line-clamp-2 text-xl font-bold text-main transition-colors sm:text-xl"
+                class="mb-2 line-clamp-2 text-xl font-bold text-main transition-colors"
               >
                 {{ post.title }}
               </h3>
 
-              <p
-                class="mb-2 line-clamp-2 text-sm leading-relaxed text-muted sm:line-clamp-2"
-              >
+              <p class="mb-2 line-clamp-2 text-sm leading-relaxed text-muted">
                 {{ post.summary }}
               </p>
+
               <div class="mt-auto flex items-center justify-between">
                 <div class="flex items-center gap-2">
                   <span
@@ -241,8 +230,9 @@ const customBlankIcon = h("div");
                 <a
                   :href="post.url"
                   class="flex items-center gap-1 rounded-lg px-2 py-1 text-[0.8rem] font-bold text-brand transition-all hover:gap-2 hover:bg-brand-light"
-                  ><span class="min-w-0 whitespace-nowrap">阅读全文</span>
-                  <i-ph-read-cv-logo-fill class="h-4 w-4" />
+                >
+                  <span class="min-w-0 whitespace-nowrap">查看资源</span>
+                  <i-ph-arrow-square-out-bold class="h-4 w-4" />
                 </a>
               </div>
             </div>
@@ -319,7 +309,7 @@ const customBlankIcon = h("div");
             </div>
             <div class="flex items-center">
               <button
-                @click="handleSearch"
+                @click="handleReset"
                 class="text-bold flex items-center justify-center gap-1 rounded-l-xl border border-color px-2 py-1 text-[0.875rem] text-muted transition-colors duration-300 hover:bg-brand-light hover:text-brand"
               >
                 <i-material-symbols-prompt-suggestion-rounded class="h-4 w-4" />
@@ -410,8 +400,8 @@ const customBlankIcon = h("div");
               >
                 {{
                   cat === "全部"
-                    ? allPosts.length
-                    : allPosts.filter((p) => p.category === cat).length
+                    ? allResources.length
+                    : allResources.filter((p) => p.category === cat).length
                 }}
               </span>
             </div>
