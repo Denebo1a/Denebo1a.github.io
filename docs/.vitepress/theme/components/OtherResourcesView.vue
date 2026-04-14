@@ -260,9 +260,8 @@ const customBlankIcon = h("div");
                 @click="selectedLayout = layout.type"
                 class="flex h-8 w-8 items-center justify-center rounded-xl transition-colors duration-300"
                 :class="{
-                  'bg-brand-light text-brand ring-2 ring-brand':
-                    selectedLayout === layout.type,
-                  'bg-card text-muted hover:bg-brand-light hover:text-brand':
+                  'bg-brand-light text-brand': selectedLayout === layout.type,
+                  'bg-card text-muted hover:bg-alt':
                     selectedLayout !== layout.type,
                 }"
               >

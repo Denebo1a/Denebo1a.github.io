@@ -105,7 +105,9 @@ const filteredPosts = computed(() => {
   // 第二步：后排序 (Sort)
   return result.sort((a, b) => {
     // 根据选择的值返回升序或降序
-    return selectedSort.value === "date-asc" ? a.date.time - b.date.time : b.date.time - a.date.time;
+    return selectedSort.value === "date-asc"
+      ? a.date.time - b.date.time
+      : b.date.time - a.date.time;
   });
 });
 
@@ -250,7 +252,7 @@ const customBlankIcon = h("div");
         </div>
       </div>
 
-      <aside class="sticky top-20 space-y-4 self-start lg:col-span-3">
+      <aside class="sticky top-0 space-y-4 self-start lg:col-span-3">
         <div
           class="rounded-[1.5rem] border border-color bg-card p-4 shadow-card"
         >
@@ -270,9 +272,8 @@ const customBlankIcon = h("div");
                 @click="selectedLayout = layout.type"
                 class="flex h-8 w-8 items-center justify-center rounded-xl transition-colors duration-300"
                 :class="{
-                  'bg-brand-light text-brand ring-2 ring-brand':
-                    selectedLayout === layout.type,
-                  'bg-card text-muted hover:bg-brand-light hover:text-brand':
+                  'bg-brand-light text-brand': selectedLayout === layout.type,
+                  'bg-card text-muted hover:bg-alt':
                     selectedLayout !== layout.type,
                 }"
               >

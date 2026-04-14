@@ -30,7 +30,7 @@ const breadcrumbs = computed(() => {
 </script>
 
 <template>
-  <div class="drop-shadow-mds sticky top-14 z-40 w-fit">
+  <div class="drop-shadow-mds fixed top-14 z-40 w-fit">
     <div
       class="flex h-7 max-w-[70vw] items-center gap-2 rounded-br-[1rem] bg-alt px-6 shadow-md"
     >

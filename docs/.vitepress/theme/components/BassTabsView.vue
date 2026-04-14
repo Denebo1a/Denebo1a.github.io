@@ -53,10 +53,10 @@ const getLinks = (tab) => {
 </script>
 
 <template>
-  <div class="flex w-full gap-0">
+  <div class="relative flex w-full gap-0">
     <!-- 左侧艺术家栏 -->
     <aside
-      class="sticky top-20 flex h-[calc(100vh-5rem)] w-14 shrink-0 flex-col items-center gap-3 overflow-y-auto border-r border-color bg-card py-4"
+      class="fixed right-6 top-1/2 flex max-h-[calc(100vh-5rem)] w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto rounded-full border border-color bg-card py-2"
     >
       <el-tooltip
         v-for="artist in artists"
@@ -67,7 +67,7 @@ const getLinks = (tab) => {
       >
         <button
           @click="toggleArtist(artist)"
-          class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-200"
+          class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full text-sm font-bold transition-all duration-200"
           :class="
             selectedArtist === artist
               ? 'ring-brand/50 scale-110 bg-brand text-white shadow-brand ring-2'
@@ -80,17 +80,17 @@ const getLinks = (tab) => {
     </aside>
 
     <!-- 主内容区 -->
-    <div class="min-w-0 flex-1">
+    <div class="min-w-0 flex-1 pt-6">
       <!-- Sticky 筛选条 -->
       <div
-        class="bg-base/90 sticky top-16 z-10 border-b border-color px-6 py-3 backdrop-blur-sm"
+        class="bg-base/90 sticky top-0 z-10 border-b border-color px-6 py-3 backdrop-blur-sm"
       >
         <div class="flex flex-wrap items-center gap-3">
           <el-input
             v-model="searchQuery"
             placeholder="搜索曲名..."
             clearable
-            class="!w-52"
+            class="!w-96"
           >
             <template #prefix>
               <i-ph-magnifying-glass-bold class="h-4 w-4 text-muted" />
@@ -117,10 +117,11 @@ const getLinks = (tab) => {
             v-if="selectedArtist"
             class="flex items-center gap-1 rounded-full bg-brand-light px-3 py-1 text-sm font-semibold text-brand"
           >
-            {{ selectedArtist }}
+            <i-material-symbols-artist class="h-4 w-4" />
+            <span>{{ selectedArtist }}</span>
             <button
               @click="selectedArtist = ''"
-              class="ml-1 hover:text-red-500"
+              class="text-muted hover:text-brand"
             >
               <i-ph-x-bold class="h-3 w-3" />
             </button>
@@ -139,7 +140,7 @@ const getLinks = (tab) => {
 
         <div
           v-else
-          class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5"
+          class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
         >
           <div
             v-for="tab in filteredTabs"
@@ -169,14 +170,23 @@ const getLinks = (tab) => {
                         >
                           <i-ant-design-bilibili-outlined
                             v-if="link.icon === 'bilibili'"
-                            class="h-4 w-4 text-[#00B5FF]"
+                            class="h-4 w-4 text-brand"
                           />
                           <i-ph-cloud-arrow-down-bold
                             v-else-if="link.icon === 'baidu'"
-                            class="h-4 w-4 text-[#2932E1]"
+                            class="h-4 w-4 text-brand"
                           />
                           <i-ph-cloud-bold v-else class="h-4 w-4 text-brand" />
                           {{ link.label }}
+                          <div
+                            class="flex items-center gap-0.5 rounded-full bg-brand-light px-1 py-0.5"
+                            v-if="link.icon !== 'bilibili'"
+                          >
+                            <i-material-symbols-lock
+                              class="h-3 w-3 text-brand"
+                            />
+                            <span class="text-[0.7rem] text-brand">BASS</span>
+                          </div>
                         </a>
                       </el-dropdown-item>
                     </template>
@@ -214,7 +224,7 @@ const getLinks = (tab) => {
 
                   <!-- genre 角标 -->
                   <span
-                    class="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[0.6rem] font-bold tracking-wide text-white backdrop-blur-sm"
+                    class="absolute bottom-2 left-2 rounded-md bg-black/60 px-2 py-0.5 text-[0.8rem] font-bold tracking-wide text-white backdrop-blur-sm"
                   >
                     {{ tab.genre }}
                   </span>
