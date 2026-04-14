@@ -8,7 +8,7 @@ const { frontmatter, page } = useData();
 const links = [
   {
     key: "bilibiliUrl",
-    label: "B站视频",
+    label: "B站走带视频",
     icon: "bilibili",
   },
   {
