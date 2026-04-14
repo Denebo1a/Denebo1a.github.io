@@ -1,149 +1,87 @@
 <script setup>
-// 模拟数据
-const bassTabs = [
-  {
-    id: 1,
-    title: "祝福 (The Blessing)",
-    artist: "YOASOBI · 高阶 Slap",
-    cover: "/covers/blessing-cover.jpg",
-    link: "/basstabs/blessing.pdf",
-    type: "PDF",
-  },
-  {
-    id: 2,
-    title: "星座 (Constellation)",
-    artist: "Bocchi the Rock! · 拨片",
-    cover: "/covers/constellation-cover.jpg",
-    link: "/basstabs/constellation.gp5",
-    type: "GP5",
-  },
-  {
-    id: 3,
-    title: "夜に駆ける",
-    artist: "YOASOBI · 指弹",
-    cover: "/covers/yoru-cover.jpg",
-    link: "#",
-    type: "PDF",
-  },
-  {
-    id: 4,
-    title: "群青",
-    artist: "YOASOBI · 综合",
-    cover: "/covers/gunjo-cover.jpg",
-    link: "#",
-    type: "GP5",
-  },
+import { ref } from "vue";
+import BassTabsView from "./BassTabsView.vue";
+import OtherResourcesView from "./OtherResourcesView.vue";
+import otherIcon from "~icons/material-symbols/other-admission-outline";
+import bassIcon from "~icons/ph/music-notes-fill";
+
+const tabs = [
+  { key: "basstabs", label: "BASS TAB", icon: bassIcon },
+  { key: "others", label: "其他", icon: otherIcon },
 ];
+
+const activeTab = ref("basstabs");
 </script>
 
 <template>
-  <section class="w-full overflow-hidden py-8">
-    <div class="mb-8 flex items-center justify-between px-6 md:px-8">
-      <div class="flex items-center gap-3">
-        <Icon
-          icon="ph:record-fill"
-          class="h-8 w-8 text-brand transition-colors"
-        />
-        <h2
-          class="text-2xl font-extrabold tracking-tight text-main transition-colors"
-        >
-          Bass Tabs
-        </h2>
-      </div>
-      <a
-        href="/resources"
-        class="text-sm font-bold text-brand transition-colors hover:underline"
-      >
-        View All
-      </a>
-    </div>
-
-    <div
-      class="hide-scrollbar flex w-full gap-8 overflow-x-auto px-6 pb-16 pt-8 md:px-8"
-    >
+  <div class="relative min-h-full w-full">
+    <!-- 顶部 Switch -->
+    <div class="fixed left-1/2 top-16 z-30 -translate-x-1/2">
       <div
-        v-for="tab in bassTabs"
-        :key="tab.id"
-        class="perspective-1000 w-64 shrink-0 transition-transform duration-500 hover:-translate-y-3 md:w-72"
+        class="inline-flex rounded-2xl border border-color bg-card p-1 shadow-card"
       >
-        <a :href="tab.link" target="_blank" class="group block">
-          <div
-            class="preserve-3d rotate-crate group-hover:rotate-flat relative cursor-pointer transition-transform duration-700"
-          >
-            <div
-              class="relative aspect-square w-full overflow-hidden rounded-md bg-alt shadow-[20px_20px_60px_rgba(0,0,0,0.08)] ring-1 ring-black/5 transition-shadow duration-700 dark:shadow-[20px_20px_60px_rgba(0,0,0,0.4)] dark:ring-white/10"
-            >
-              <img
-                v-if="tab.cover"
-                :src="tab.cover"
-                :alt="tab.title"
-                class="h-full w-full object-cover"
-              />
-              <div
-                v-else
-                class="flex h-full w-full items-center justify-center bg-card"
-              >
-                <Icon
-                  icon="ph:music-notes-simple-bold"
-                  class="h-12 w-12 text-muted opacity-30"
-                />
-              </div>
-
-              <span
-                class="absolute right-3 top-3 rounded bg-black/60 px-2 py-1 text-[0.65rem] font-bold tracking-widest text-white backdrop-blur-md"
-              >
-                {{ tab.type }}
-              </span>
-            </div>
-
-            <div class="mt-6 flex flex-col">
-              <h3
-                class="line-clamp-1 text-xl font-bold text-main transition-colors group-hover:text-brand"
-              >
-                {{ tab.title }}
-              </h3>
-              <p class="mt-1 text-sm font-medium text-muted transition-colors">
-                {{ tab.artist }}
-              </p>
-            </div>
-          </div>
-        </a>
+        <button
+          v-for="tab in tabs"
+          :key="tab.key"
+          @click="activeTab = tab.key"
+          class="flex items-center gap-1 rounded-full px-2 py-1 text-[0.8rem] font-bold transition-all duration-200"
+          :class="
+            activeTab === tab.key
+              ? 'bg-brand-light text-brand shadow-sm'
+              : 'text-muted hover:bg-alt'
+          "
+        >
+          <component :is="tab.icon" class="mr-1 inline-block h-4 w-4" />
+          <span>{{ tab.label }}</span>
+        </button>
       </div>
     </div>
-  </section>
+
+    <!-- 子视图 -->
+    <BassTabsView v-if="activeTab === 'basstabs'" />
+    <OtherResourcesView v-else-if="activeTab === 'others'" />
+  </div>
 </template>
 
-<style scoped>
-/* 隐藏丑陋的滚动条 */
-.hide-scrollbar {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
-}
+<style>
+/* 修改点 3： 
+  在这里直接定义 custom-scrollbar 的样式。
+  不加 scoped，确保它能稳定作用于整个 main 容器。
+*/
 
-/* =========================================
-   3D 唱片箱核心 CSS
-========================================= */
-
-/* 1. 定义观察者的镜头距离（值越小，透视畸变越严重；1000px 是最舒适的物理距离） */
-.perspective-1000 {
-  perspective: 1000px;
+/* 针对 Webkit 浏览器 (Chrome, Edge, Safari) */
+.custom-scrollbar::-webkit-scrollbar {
+  width: 6px; /* 纤细的滚动条 */
 }
 
-/* 2. 保持子元素的 3D 空间关系 */
-.preserve-3d {
-  transform-style: preserve-3d;
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent; /* 轨道透明 */
 }
 
-/* 3. 初始的倾斜状态：向左转 12 度，向上仰 5 度 */
-.rotate-crate {
-  transform: rotateY(-12deg) rotateX(5deg);
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  /* 使用半透明灰色，圆角设计 */
+  background-color: rgba(156, 163, 175, 0.4);
+  border-radius: 9999px; /* 对应 tailwind 的 rounded-full */
 }
 
-/* 4. 悬浮时的展平状态：恢复到 0 度直视 */
-.rotate-flat {
-  transform: rotateY(0deg) rotateX(0deg);
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(107, 114, 128, 0.8); /* 悬停时加深 */
+}
+
+/* 针对 Firefox */
+.custom-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+}
+
+/* 如果你的项目支持深色模式 (dark mode)，可以自动适配 */
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background-color: rgba(156, 163, 175, 0.2);
+}
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background-color: rgba(156, 163, 175, 0.5);
+}
+.dark .custom-scrollbar {
+  scrollbar-color: rgba(156, 163, 175, 0.2) transparent;
 }
 </style>

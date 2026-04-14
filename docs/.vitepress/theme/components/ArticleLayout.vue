@@ -224,7 +224,7 @@ onMounted(() => {
               {{ post.title }}
             </h4>
             <span class="text-xs font-medium text-muted transition-colors">{{
-              formatDate(post.date).string
+              post.date.string
             }}</span>
           </a>
         </div>

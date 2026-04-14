@@ -4,7 +4,7 @@ title: 网络入侵检测与数字取证 - 课程笔记1 - zeek 基础
 date: 2026-04-11
 category: 课程笔记
 tags: [zeek, 网络安全, 入侵检测, 数字取证]
-cover: /covers/zeek-exercise-1.png
+cover: /blog/covers/zeek-exercise-1.png
 summary: 基于VitePress的个人博客网站搭建教程！
 ---
 

@@ -29,5 +29,9 @@
     "unplugin-vue-components": "^32.0.0",
     "vitepress": "^1.6.4",
     "vue": "^3.5.31"
+  },
+  "dependencies": {
+    "@coderline/alphatab": "^1.8.2",
+    "@coderline/alphatab-vite": "^1.8.2"
   }
 }
