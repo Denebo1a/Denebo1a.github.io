@@ -5,6 +5,7 @@ import HomeView from "./components/HomeView.vue";
 import BlogIndexView from "./components/BlogIndexView.vue";
 import ResourcesIndexView from "./components/ResourcesIndexView.vue";
 import ArticleLayout from "./components/ArticleLayout.vue";
+import BassTabLayout from "./components/BassTabLayout.vue";
 import Breadcrumb from "./components/Breadcrumb.vue";
 
 const { frontmatter } = useData();
@@ -24,6 +25,7 @@ const { frontmatter } = useData();
         v-else-if="frontmatter.layout === 'resources-index'"
       />
       <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
+      <BassTabLayout v-else-if="frontmatter.layout === 'basstab-detail'" />
 
       <div
         v-else
@@ -41,6 +43,10 @@ const { frontmatter } = useData();
 /* 针对 Webkit 浏览器 (Chrome, Edge, Safari) */
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px; /* 纤细的滚动条 */
+}
+
+.custom-scrollbar::-webkit-scrollbar-button {
+  display: none;
 }
 
 .custom-scrollbar::-webkit-scrollbar-track {

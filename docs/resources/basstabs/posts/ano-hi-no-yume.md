@@ -1,8 +1,8 @@
 ---
 layout: basstab-detail
-title: 紅蓮華
-artist: LiSA
-genre: 偶像音乐企划
+title: あの日の夢
+artist: Bocchi the Rock!
+genre: 邦摇
 cover: ""
 gpxUrl: ""
 bilibiliUrl: ""

@@ -248,7 +248,7 @@ const customBlankIcon = h("div");
             class="mb-3 flex items-center justify-between border-b border-color pb-2"
           >
             <div class="flex items-center gap-2">
-              <Icon icon="ph:layout-bold" class="h-4 w-4 text-brand" />
+              <i-ph-layout-bold class="h-4 w-4 text-brand" />
               <h4 class="font-bold text-main">视图布局</h4>
             </div>
           </div>

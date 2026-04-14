@@ -17,14 +17,24 @@ const breadcrumbs = computed(() => {
       if (frontmatter.value.category) {
         items.push({ name: frontmatter.value.category, path: null });
       }
-
       // 最后一级是当前文章的标题
       items.push({ name: page.value.title, path: null }); // 当前页不需要加上链接
     }
-  } else if (route.path.startsWith("/blog/")) {
-    items.push({ name: "博客", path: "/blog/" });
+  } else if (route.path.startsWith("/resources/")) {
+    items.push({ name: "资源", path: "/resources/" });
+    if (route.path !== "/resources/") {
+      if (frontmatter.value.layout === "basstab-detail") {
+        items.push({
+          name:
+            frontmatter.value.layout === "basstab-detail" ? "BASS TAB" : "其他",
+          path: null,
+        });
+        items.push({ name: frontmatter.value.genre, path: null });
+        items.push({ name: frontmatter.value.artist, path: null });
+        items.push({ name: frontmatter.value.title, path: null });
+      }
+    }
   }
-
   return items;
 });
 </script>
