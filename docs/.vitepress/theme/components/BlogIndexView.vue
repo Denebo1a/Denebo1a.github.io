@@ -22,6 +22,13 @@ const handleSearch = () => {
   dateRange.value = dateRangeInput.value;
 };
 
+const handleReset = () => {
+  searchQueryInput.value = "";
+  tagQueryInput.value = [];
+  dateRangeInput.value = [];
+  handleSearch();
+};
+
 // --- 布局类型 ---
 const layoutTypes = [
   {
@@ -320,7 +327,7 @@ const customBlankIcon = h("div");
             </div>
             <div class="flex items-center">
               <button
-                @click="handleSearch"
+                @click="handleReset"
                 class="text-bold flex items-center justify-center gap-1 rounded-l-xl border border-color px-2 py-1 text-[0.875rem] text-muted transition-colors duration-300 hover:bg-brand-light hover:text-brand"
               >
                 <i-material-symbols-prompt-suggestion-rounded class="h-4 w-4" />
