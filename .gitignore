@@ -40,3 +40,6 @@ dist/
 coverage/
 .temp/
 .cache/
+
+# 8.Claude Code相关
+.claude/

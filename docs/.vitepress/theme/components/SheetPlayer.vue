@@ -230,7 +230,7 @@ onBeforeUnmount(() => {
 
 /* 乐谱背景与主题卡片色一致 */
 :deep(.at-surface) {
-  background: var(--color-bg-card) !important;
+  background: white !important;
 }
 
 /* seek 滑块美化（WebKit） */
