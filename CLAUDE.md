@@ -22,6 +22,7 @@
 | 自动导入 | unplugin-vue-components | ^32.0.0 |
 | 字体 | Inter + Noto Sans SC（Google Fonts CDN） | - |
 | 代码格式化 | Prettier + prettier-plugin-tailwindcss | ^3.8.1 |
+| 乐谱渲染 | @coderline/alphatab | ^1.8.2 |
 | 构建 | Vite（VitePress 内置） | - |
 | 部署 | GitHub Actions → GitHub Pages | - |
 
@@ -42,8 +43,11 @@ Blog-CC/
 │   ├── resources/
 │   │   └── index.md              # 资源页，frontmatter: layout: resources-index
 │   ├── public/                   # 静态资源（avatar.png 等）
+│   │   ├── alphatab/             # alphaTab 运行时静态镜像（mjs/core/worker/worklet）
+│   │   ├── font/                 # alphaTab 字体资源（Bravura.*）
+│   │   └── soundfont/            # alphaTab 音源资源（sonivox.sf2 / sonivox.sf3）
 │   └── .vitepress/
-│       ├── config.mts            # VitePress 配置（SEO、Vite 插件）
+│       ├── config.mts            # VitePress 配置（SEO、Vite 插件、optimizeDeps）
 │       └── theme/
 │           ├── index.ts          # 主题入口（注册 Layout、全局 CSS、Element Plus）
 │           ├── Layout.vue        # 路由分发器（按 frontmatter.layout 切换视图）
@@ -55,6 +59,7 @@ Blog-CC/
 │           │   ├── SiteHeader.vue        # 顶部导航（路由激活状态、ThemeSwitcher）
 │           │   ├── Breadcrumb.vue        # 面包屑（sticky，仅博客路由有多级）
 │           │   ├── ResourcesIndexView.vue # 资源页（Bass Tabs，3D 卡片悬浮动画）
+│           │   ├── SheetPlayer.vue       # alphaTab 乐谱播放器（客户端动态加载 + worker 播放）
 │           │   ├── ThemeSwitcher.vue     # 主题切换器（4 套主题，localStorage 持久化）
 │           │   └── styles/
 │           │       └── GlowCardBg.vue    # 环境光晕卡片容器（用于 HomeView）
@@ -107,6 +112,13 @@ ArticleLayout.vue
 ThemeSwitcher.vue
   └── 向 <html> 写入 data-theme 属性 → CSS 变量切换 → localStorage 持久化
       主题：default(Ocean) / forest / autumn / dark
+
+SheetPlayer.vue
+  ├── 仅客户端 onMounted 中通过 `import(withBase('/alphatab/alphaTab.mjs'))` 动态加载 alphaTab
+  ├── `settings.core.scriptFile = withBase('/alphatab/alphaTab.mjs')`
+  ├── `settings.core.fontDirectory = withBase('/font/')`
+  ├── `settings.player.soundFont = withBase('/soundfont/sonivox.sf3')`
+  └── 依赖 `docs/public/alphatab/*` 中的静态 mjs/core/worker/worklet 文件，避免 VitePress 构建时 worker 路径失效
 ```
 
 ---
@@ -145,6 +157,51 @@ summary: 一段简短摘要（用于博客列表卡片）
 cover: /covers/my-cover.jpg   # 可选，相对于 public/ 的路径
 ---
 ```
+
+---
+
+## alphaTab 集成说明
+
+### 当前采用的最终方案
+
+- 保留运行时依赖：`@coderline/alphatab`
+- 不再依赖 `@coderline/alphatab-vite` 参与 VitePress 构建流程
+- `docs/.vitepress/config.mts` 中通过 `optimizeDeps.exclude: ['@coderline/alphatab']` 避免 dev 阶段 dep optimizer 误处理 alphaTab
+- `SheetPlayer.vue` 不直接从 npm 包运行时入口推导 worker，而是从 `docs/public/alphatab/` 下的站内静态 ESM 文件动态导入
+- `docs/public/alphatab/alphaTab.mjs` 与其同目录下的 `alphaTab.core.mjs / alphaTab.worker.mjs / alphaTab.worklet.mjs` 一起发布到 GitHub Pages，确保 `import.meta.url` 能正确解析 worker/worklet 相对路径
+- 字体与音源均走站内静态资源：`/font/`、`/soundfont/sonivox.sf3`
+
+### 为什么这样做
+
+原先在 `config.mts` 中启用 `alphaTab()` 插件时，GitHub Actions 构建会报错：
+
+```text
+[vite-plugin-alphatab-url] Cannot read properties of undefined (reading 'client')
+```
+
+移除插件后虽然 build 成功，但线上 `alphaTab.worker.mjs` 会请求到错误的打包路径（如 `/assets/chunks/alphaTab.worker.mjs`），导致 worker 挂起、播放器长期停留在初始化状态、`soundfont` 也不会开始加载。
+
+将 alphaTab 运行时文件镜像到 `docs/public/alphatab/` 后，worker/worklet 路径由浏览器基于真实静态文件 URL 解析，适配 GitHub Pages，避免了 VitePress + alphaTab worker 插件兼容性问题。
+
+### 新增/保留文件
+
+- `docs/public/alphatab/alphaTab.mjs`
+- `docs/public/alphatab/alphaTab.core.mjs`
+- `docs/public/alphatab/alphaTab.worker.mjs`
+- `docs/public/alphatab/alphaTab.worklet.mjs`
+- `docs/public/font/*`
+- `docs/public/soundfont/sonivox.sf2`
+- `docs/public/soundfont/sonivox.sf3`
+
+### 维护注意事项
+
+- 升级 `@coderline/alphatab` 版本后，需要同步更新 `docs/public/alphatab/` 下的四个运行时文件
+- 如需排查播放器初始化问题，优先检查线上是否能访问：
+  - `/alphatab/alphaTab.mjs`
+  - `/alphatab/alphaTab.worker.mjs`
+  - `/alphatab/alphaTab.worklet.mjs`
+  - `/soundfont/sonivox.sf3`
+- 如果乐谱能渲染但播放按钮长期 disabled，通常优先排查 worker/worklet 或 soundfont 请求，而不是 Markdown 文件本身
 
 ---
 
