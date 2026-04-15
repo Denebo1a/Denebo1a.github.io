@@ -4,6 +4,8 @@ node_modules/
 # 2. VitePress 构建输出与缓存
 docs/.vitepress/dist/
 docs/.vitepress/cache/
+# 忽略 Vite/构建工具生成的带有时间戳的临时 mjs 文件
+*.timestamp-*.mjs
 
 # 4. 日志文件
 npm-debug.log*

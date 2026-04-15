@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import alphaTabScriptFile from "@coderline/alphatab?url";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { withBase } from "vitepress";
 
@@ -46,22 +47,21 @@ onMounted(async () => {
 
   const settings = new at.Settings();
 
-  settings.core.useWorkers = false;
+  settings.core.useWorkers = true;
+  settings.core.scriptFile = alphaTabScriptFile;
   // 显示：五线谱 + TAB 双行
   settings.notation.notationMode = at.NotationMode.GuitarPro;
   // 按页换行布局
   settings.display.layoutMode = at.LayoutMode.Page;
   settings.display.systemsLayoutMode = at.SystemsLayoutMode.UseModelLayout;
-  // 启用播放器（使用 @coderline/alphatab-vite 捆绑的默认音源）
+  // 启用播放器
   settings.player.enablePlayer = true;
   settings.player.enableUserInteraction = true;
   settings.player.scrollMode = at.ScrollMode.OffScreen;
   settings.player.scrollElement = wrapper.value!;
   // 强制指定底层字体与音源库目录
-  settings.core.fontDirectory =
-    "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/font/";
-  settings.player.soundFont =
-    "https://cdn.jsdelivr.net/npm/@coderline/alphatab@latest/dist/soundfont/sonivox.sf3";
+  settings.core.fontDirectory = withBase("/font/");
+  settings.player.soundFont = withBase("/soundfont/sonivox.sf3");
 
   const api = new at.AlphaTabApi(wrapper.value!, settings);
   apiRef = api;
@@ -74,6 +74,22 @@ onMounted(async () => {
   // 音源就绪 → 解锁 Play 按钮
   api.playerReady.on(() => {
     isPlayerReady.value = true;
+  });
+
+  api.renderStarted.on(() => {
+    console.debug("[SheetPlayer] render started");
+  });
+
+  api.renderFinished.on(() => {
+    console.debug("[SheetPlayer] render finished");
+  });
+
+  api.soundFontLoaded.on(() => {
+    console.debug("[SheetPlayer] soundfont loaded");
+  });
+
+  api.error.on((error: unknown) => {
+    console.error("[SheetPlayer] alphaTab error", error);
   });
 
   // 播放/暂停状态同步
