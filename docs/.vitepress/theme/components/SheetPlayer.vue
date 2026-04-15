@@ -46,6 +46,7 @@ onMounted(async () => {
 
   const settings = new at.Settings();
 
+  settings.core.useWorkers = false;
   // 显示：五线谱 + TAB 双行
   settings.notation.notationMode = at.NotationMode.GuitarPro;
   // 按页换行布局
