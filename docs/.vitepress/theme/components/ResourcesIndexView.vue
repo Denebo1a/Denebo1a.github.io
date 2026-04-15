@@ -2,7 +2,7 @@
 import { ref } from "vue";
 import BassTabsView from "./BassTabsView.vue";
 import OtherResourcesView from "./OtherResourcesView.vue";
-import otherIcon from "~icons/material-symbols/other-admission-outline";
+import otherIcon from "~icons/ph/dots-three-circle-vertical-fill";
 import bassIcon from "~icons/ph/music-notes-fill";
 
 const tabs = [

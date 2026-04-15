@@ -1,6 +1,7 @@
 ---
 layout: basstab-detail
 title: 28歳になったら
+date: 2026-04-14
 artist: Adult family
 genre: 邦摇
 cover: "/resources/basstabs/covers/28-sai-ni-nadda-ra.png"
