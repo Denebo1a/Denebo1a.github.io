@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import alphaTabScriptFile from "@coderline/alphatab?url";
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { withBase } from "vitepress";
 
@@ -43,12 +42,12 @@ const onSeekEnd = (e: Event) => {
 onMounted(async () => {
   if (import.meta.env.SSR) return;
 
-  const at = await import("@coderline/alphatab");
+  const at = await import(withBase("/alphatab/alphaTab.mjs"));
 
   const settings = new at.Settings();
 
   settings.core.useWorkers = true;
-  settings.core.scriptFile = alphaTabScriptFile;
+  settings.core.scriptFile = withBase("/alphatab/alphaTab.mjs");
   // 显示：五线谱 + TAB 双行
   settings.notation.notationMode = at.NotationMode.GuitarPro;
   // 按页换行布局
