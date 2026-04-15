@@ -2,7 +2,6 @@ import { defineConfig } from 'vitepress'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
-import { alphaTab } from '@coderline/alphatab-vite'
 
 const HOSTNAME = "https://Denebo1a.github.io"
 
@@ -55,8 +54,10 @@ export default defineConfig({
     )
   },
   vite: {
+    optimizeDeps: {
+      exclude: ['@coderline/alphatab'],
+    },
     plugins: [
-      alphaTab(),
       Components({
         resolvers: [
           // 告诉解析器碰到以 'i-' 开头的组件，去 unplugin-icons 里找
