@@ -243,7 +243,7 @@ const handleSecretClick = () => {
                 >
                   <div class="flex items-center gap-2">
                     <span
-                      class="shrink-0 rounded-full bg-brand px-2 py-0.5 text-[12px] font-bold text-brand-light"
+                      class="shrink-0 rounded-full bg-brand px-2 py-0.5 text-[12px] font-bold text-white"
                       >{{ item.typeLabel }}</span
                     >
                     <span

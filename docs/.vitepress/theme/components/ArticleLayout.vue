@@ -128,7 +128,7 @@ onMounted(() => {
       </div>
 
       <div
-        class="prose-brand prose prose-lg mx-auto max-w-none transition-colors duration-300"
+        class="article-content prose-brand prose prose-lg mx-auto max-w-none transition-colors duration-300"
       >
         <Content />
       </div>

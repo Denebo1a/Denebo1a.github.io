@@ -29,6 +29,13 @@
   /* 阴影系统 (带品牌色相的高级阴影) */
   --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.05); /* 干净的常规阴影 */
   --shadow-brand: 0 8px 24px rgba(2, 132, 199, 0.2); /* 悬浮时的品牌色阴影 */
+
+  /* 围栏代码块固定视觉变量（不跟随站点主题切换） */
+  --code-block-bg: #0d1117;
+  --code-block-title-bg: #161b22;
+  --code-block-border: rgba(240, 246, 252, 0.12);
+  --code-block-lang: rgba(240, 246, 252, 0.55);
+  --code-block-highlight: rgba(56, 139, 253, 0.16);
 }
 
 /* =========================================================
@@ -174,77 +181,85 @@ button.el-button:hover {
 }
 
 /* ==========================================================
-   VitePress 专属代码块样式补丁 (配合 Tailwind Prose 使用)
+   VitePress 围栏代码块样式（固定视觉主题）
    ========================================================== */
-
-/* 1. 最外层容器：限制边界，暗黑底色 */
-.prose div[class*="language-"] {
+.article-content div[class*="language-"] {
   position: relative;
   margin: 1.5rem 0;
-  background-color: var(--color-text-main); /* 经典的 VSCode/Shiki 暗黑底色 */
+  border: 1px solid var(--code-block-border);
   border-radius: 0.75rem;
-  overflow: hidden;
+  background: var(--code-block-bg);
   box-shadow:
-    0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    0 4px 6px -1px rgba(0, 0, 0, 0.18),
+    0 2px 4px -1px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
 }
 
-/* 2. 修正 Tailwind Prose 默认对 pre 标签的影响 */
-.prose div[class*="language-"] pre {
-  position: relative;
-  z-index: 2; /* 确保文字在高亮层之上 */
+.article-content div[class*="language-"] pre,
+.article-content div[class*="language-"] code {
+  background: transparent !important;
+}
+
+.article-content div[class*="language-"] pre {
   margin: 0;
   padding: 1.25rem 1.5rem;
-  background-color: transparent !important; /* 必须透明，让外层底色透出来 */
   overflow-x: auto;
 }
 
-/* 3. 右上角飘着的语言标识 (vue, js, zeek 等) */
-.prose div[class*="language-"] > span.lang {
-  position: absolute;
-  top: 0.4rem;
-  right: 0.8rem;
-  z-index: 3;
-  font-size: 0.75rem;
+.article-content div[class*="language-"] code {
+  color: inherit;
   font-weight: 500;
-  color: rgba(255, 255, 255, 0.3);
+}
+
+.article-content div[class*="language-"] .line {
+  min-height: 1.7em;
+}
+
+.article-content div[class*="language-"] > span.lang {
+  position: absolute;
+  top: 0.55rem;
+  right: 0.85rem;
+  z-index: 2;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
   text-transform: lowercase;
+  color: var(--code-block-lang);
 }
 
-/* 4. 文件名标题栏 */
-.prose .vp-code-block-title {
-  background-color: var(--color-text-main);
-  padding: 0.5rem 1.5rem;
-  font-size: 0.85rem;
+.article-content .vp-code-block-title {
+  padding: 0.65rem 1.5rem;
+  border-bottom: 1px solid var(--code-block-border);
+  background: var(--code-block-title-bg);
+  color: #c9d1d9;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  color: #a3a3a3;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-size: 0.85rem;
 }
 
-/* 当有标题栏时，隐藏右上角的语言标识（避免重叠，可选） */
-.prose div[class*="language-"]:has(.vp-code-block-title) > span.lang {
+.article-content div[class*="language-"]:has(.vp-code-block-title) > span.lang {
   display: none;
 }
 
-/* 5. 代码行高亮遮罩层逻辑 */
-.prose div[class*="language-"] .highlight-lines {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  padding-top: 1.25rem; /* 必须与上面的 pre padding-top 保持一致 */
-  z-index: 1; /* 垫在文字下方 */
-  pointer-events: none; /* 让鼠标穿透，不影响选中代码 */
-  line-height: 1.7142857; /* 这里的行高需要与你 Tailwind 渲染出的代码行高一致，如果高亮对不齐，微调这个数值 */
+.article-content div[class*="language-"] .highlighted {
+  display: inline-block;
+  margin: 0 -1.5rem;
+  padding: 0 1.5rem;
+  width: calc(100% + 3rem);
+  background: var(--code-block-highlight);
 }
 
-/* 如果存在标题栏，高亮层需要往下偏移标题栏的高度 */
-.prose div[class*="language-"]:has(.vp-code-block-title) .highlight-lines {
-  margin-top: 2.3rem; /* 标题栏的大致高度，可微调 */
+.article-content div[class*="language-"]::-webkit-scrollbar,
+.article-content div[class*="language-"] pre::-webkit-scrollbar {
+  height: 0.6rem;
 }
 
-.prose div[class*="language-"] .highlighted {
-  background-color: rgba(255, 255, 255, 0.1); /* 高亮行的背景颜色 */
-  width: 100%;
-  height: 1.7142857em; /* 必须与上面的 line-height 保持一致 */
+.article-content div[class*="language-"]::-webkit-scrollbar-thumb,
+.article-content div[class*="language-"] pre::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: rgba(240, 246, 252, 0.22);
+}
+
+.article-content div[class*="language-"]::-webkit-scrollbar-track,
+.article-content div[class*="language-"] pre::-webkit-scrollbar-track {
+  background: transparent;
 }

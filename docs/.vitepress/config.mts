@@ -8,12 +8,13 @@ const HOSTNAME = "https://Denebo1a.github.io"
 export default defineConfig({
   title: 'DeneBlog',
   description: 'Denebora的数字花园',
-  
+
   // 显式要求 VitePress 提取 Markdown 标题供客户端使用
   markdown: {
+    theme: 'github-dark',
     headers: {
       // 提取 h2 和 h3 标题
-      level: [2, 3] 
+      level: [2, 3]
     }
   },
   //
