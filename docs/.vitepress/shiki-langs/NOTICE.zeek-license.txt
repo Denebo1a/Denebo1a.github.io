@@ -1,0 +1,13 @@
+Custom grammar vendored for Shiki/VitePress integration.
+
+Source:
+- https://github.com/bbannier/zeek-language-server
+- https://raw.githubusercontent.com/bbannier/zeek-language-server/main/vscode/syntaxes/zeek.json
+
+Upstream license:
+- GPL-3.0
+- https://raw.githubusercontent.com/bbannier/zeek-language-server/main/LICENSE
+
+Local note:
+- This file is used only to provide Zeek fenced-code syntax highlighting in the docs site.
+- If the upstream grammar changes, sync this file and re-check the upstream license terms.

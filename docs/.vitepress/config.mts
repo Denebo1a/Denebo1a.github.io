@@ -2,6 +2,7 @@ import { defineConfig } from 'vitepress'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
+import { customLanguages } from './shiki-langs/index.mts'
 
 const HOSTNAME = "https://Denebo1a.github.io"
 
@@ -11,7 +12,8 @@ export default defineConfig({
 
   // 显式要求 VitePress 提取 Markdown 标题供客户端使用
   markdown: {
-    theme: 'github-dark',
+    theme: 'material-theme-palenight',
+    languages: customLanguages,
     headers: {
       // 提取 h2 和 h3 标题
       level: [2, 3]
@@ -27,7 +29,7 @@ export default defineConfig({
     // 提取文章信息（如果单篇文章没有填，回退到站点默认值）
     const title = pageData.title || 'DeneBlog'
     const description = pageData.description || 'Denebora的数字花园'
-    
+
     // 处理封面图：如果在 frontmatter 中指定了 cover，就拼成绝对路径，否则用默认图
     const imageUrl = pageData.frontmatter.cover
       ? `${HOSTNAME}${pageData.frontmatter.cover}`
@@ -70,7 +72,7 @@ export default defineConfig({
       // 注册图标插件本身
       Icons({
         compiler: 'vue3',
-        autoInstall: true, 
+        autoInstall: true,
       })
     ]
   }
