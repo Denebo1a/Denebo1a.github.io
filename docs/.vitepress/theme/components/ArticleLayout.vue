@@ -1,5 +1,12 @@
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  ref,
+  watch,
+} from "vue";
 import { useData, useRoute } from "vitepress";
 import { data as allPosts } from "../../../blog/posts.data";
 import { formatDate } from "../utils/format";
@@ -12,6 +19,11 @@ const route = useRoute();
 
 const isCopied = ref(false);
 const xShareLink = ref("");
+const activeHash = ref("");
+const lockedHash = ref("");
+const isHashNavigating = ref(false);
+
+let headingObserver = null;
 
 const successMessageOptions = {
   message: "链接成功复制到剪贴板",
@@ -57,6 +69,69 @@ const relatedPosts = computed(() => {
     .slice(0, 5);
 });
 
+const syncActiveHashFromLocation = () => {
+  activeHash.value = decodeURIComponent(window.location.hash || "");
+};
+
+const getFirstVisibleHeading = (headings, scrollRoot) => {
+  const rootTop = scrollRoot.getBoundingClientRect().top + 96;
+
+  return (
+    headings.find(
+      (heading) => heading.getBoundingClientRect().bottom > rootTop,
+    ) ||
+    headings[headings.length - 1] ||
+    null
+  );
+};
+
+const setupHeadingObserver = async () => {
+  headingObserver?.disconnect();
+  headingObserver = null;
+
+  await nextTick();
+
+  const scrollRoot = document.getElementById("site-main-scroll");
+  const headings = Array.from(
+    document.querySelectorAll(".article-content :is(h2, h3, h4)[id]"),
+  );
+
+  if (!scrollRoot || headings.length === 0) {
+    syncActiveHashFromLocation();
+    return;
+  }
+
+  headingObserver = new IntersectionObserver(
+    (entries) => {
+      const visibleEntries = entries
+        .filter((entry) => entry.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+
+      if (isHashNavigating.value) return;
+
+      if (visibleEntries.length > 0) {
+        const currentHeading = visibleEntries[0].target;
+        activeHash.value = `#${currentHeading.id}`;
+      }
+    },
+    {
+      root: scrollRoot,
+      threshold: [0, 1],
+      rootMargin: "-96px 0px -65% 0px",
+    },
+  );
+
+  headings.forEach((heading) => headingObserver.observe(heading));
+
+  if (window.location.hash) {
+    syncActiveHashFromLocation();
+    return;
+  }
+
+  const firstVisibleHeading = getFirstVisibleHeading(headings, scrollRoot);
+  activeHash.value = firstVisibleHeading ? `#${firstVisibleHeading.id}` : "";
+};
+
 // 处理复制逻辑
 const handleCopy = async () => {
   // 防抖/节流：如果已经在提示成功状态，则不重复执行
@@ -76,16 +151,70 @@ const handleCopy = async () => {
   }
 };
 
-onMounted(() => {
+const lockHashNavigation = (link) => {
+  lockedHash.value = link;
+  activeHash.value = link;
+  isHashNavigating.value = true;
+};
+
+const handleTocClick = (link) => {
+  lockHashNavigation(link);
+};
+
+const handleHashChange = () => {
+  const hash = decodeURIComponent(window.location.hash || "");
+  if (!hash) return;
+
+  lockHashNavigation(hash);
+};
+
+let unlockTimer = null;
+
+const releaseHashNavigation = () => {
+  isHashNavigating.value = false;
+  lockedHash.value = "";
+};
+
+const handleScrollSpyUnlock = () => {
+  if (!isHashNavigating.value) return;
+
+  clearTimeout(unlockTimer);
+  unlockTimer = window.setTimeout(() => {
+    releaseHashNavigation();
+    syncActiveHashFromLocation();
+  }, 120);
+};
+
+onMounted(async () => {
   const url = encodeURIComponent(window.location.href);
   const title = encodeURIComponent(`DeneBlog: ${document.title}`);
   xShareLink.value = `https://twitter.com/intent/tweet?text=${title}&url=${url}`;
+
+  await setupHeadingObserver();
+  window.addEventListener("hashchange", handleHashChange);
+
+  const scrollRoot = document.getElementById("site-main-scroll");
+  scrollRoot?.addEventListener("scroll", handleScrollSpyUnlock, {
+    passive: true,
+  });
 });
+
+onBeforeUnmount(() => {
+  headingObserver?.disconnect();
+  window.removeEventListener("hashchange", handleHashChange);
+});
+
+watch(
+  () => route.path,
+  async () => {
+    await setupHeadingObserver();
+  },
+);
 </script>
 
 <template>
   <div
-    class="relative flex w-full flex-col items-start gap-10 px-6 py-4 lg:flex-row"
+    class="relative flex w-full flex-col items-start gap-6 px-6 py-4 lg:flex-row"
   >
     <article
       class="w-full rounded-[2.5rem] bg-card p-8 shadow-card transition-colors duration-300 md:p-14 lg:w-[80%]"
@@ -103,14 +232,14 @@ onMounted(() => {
         </div>
 
         <h1
-          class="mb-6 text-4xl font-extrabold leading-[1.2] tracking-tight text-main transition-colors md:text-5xl"
+          class="mb-4 text-[1.5rem] font-bold leading-[1.2] tracking-tight text-main transition-colors md:text-[2rem]"
         >
           {{ page.title }}
         </h1>
 
         <p
           v-if="frontmatter.summary"
-          class="text-xl font-medium leading-relaxed text-muted transition-colors"
+          class="text-[1rem] font-medium leading-relaxed text-muted transition-colors"
         >
           {{ frontmatter.summary }}
         </p>
@@ -118,7 +247,7 @@ onMounted(() => {
 
       <div
         v-if="frontmatter.cover"
-        class="mb-16 aspect-[21/9] w-full overflow-hidden rounded-3xl bg-alt shadow-inner transition-colors"
+        class="mb-16 aspect-[16/9] w-full overflow-hidden rounded-3xl bg-alt shadow-inner transition-colors"
       >
         <img
           :src="frontmatter.cover"
@@ -128,7 +257,7 @@ onMounted(() => {
       </div>
 
       <div
-        class="article-content prose-brand prose prose-lg mx-auto max-w-none transition-colors duration-300"
+        class="vp-doc article-content mx-auto max-w-none transition-colors duration-300"
       >
         <Content />
       </div>
@@ -151,24 +280,27 @@ onMounted(() => {
       </div>
     </article>
 
-    <aside class="sticky top-24 w-full space-y-8 lg:w-[20%]">
+    <aside class="sticky top-0 w-full space-y-6 lg:w-[20%]">
       <div
         v-if="headers.length > 0"
-        class="rounded-[1.5rem] bg-card p-6 shadow-card transition-colors duration-300"
+        class="rounded-[1.5rem] bg-card p-4 shadow-card transition-colors duration-300"
       >
-        <h3
-          class="mb-5 flex items-center gap-2 font-bold text-main transition-colors"
-        >
-          <i-ph-list-dashes-bold class="h-5 w-5 text-brand" /> 文章目录
-        </h3>
-        <nav class="flex flex-col gap-3">
+        <div class="mb-2 flex items-center gap-2 border-b border-color pb-2">
+          <i-ph-list-dashes-bold class="h-4 w-4 text-brand" />
+          <h3 class="font-bold text-main transition-colors">文章目录</h3>
+        </div>
+        <nav class="flex flex-col gap-2">
           <a
             v-for="header in headers"
             :key="header.link"
             :href="header.link"
-            class="relative line-clamp-1 text-sm font-medium text-muted transition-colors before:absolute before:-left-3 before:top-1/2 before:h-1 before:w-1 before:-translate-y-1/2 before:rounded-full before:bg-brand before:opacity-0 before:transition-transform hover:text-brand hover:before:scale-150 hover:before:opacity-100"
+            @click="handleTocClick(header.link)"
+            class="relative line-clamp-1 rounded-md px-1 py-0.5 text-sm font-medium transition-colors hover:bg-alt"
             :class="[
               header.level === 3 ? 'ml-4' : header.level === 4 ? 'ml-8' : '',
+              activeHash === header.link
+                ? 'bg-brand-light text-brand'
+                : 'text-muted',
             ]"
           >
             {{ header.title }}
@@ -177,13 +309,12 @@ onMounted(() => {
       </div>
 
       <div
-        class="rounded-[1.5rem] bg-card p-6 shadow-card transition-colors duration-300"
+        class="rounded-[1.5rem] bg-card p-4 shadow-card transition-colors duration-300"
       >
-        <h3
-          class="mb-5 flex items-center gap-2 font-bold text-main transition-colors"
-        >
-          <i-ph-share-network-bold class="h-5 w-5 text-brand" /> 分享文章
-        </h3>
+        <div class="mb-2 flex items-center gap-2 border-b border-color pb-2">
+          <i-ph-share-network-bold class="h-4 w-4 text-brand" />
+          <h3 class="font-bold text-main transition-colors">分享文章</h3>
+        </div>
         <div class="flex gap-3">
           <a
             :href="xShareLink"
@@ -204,12 +335,12 @@ onMounted(() => {
 
       <div
         v-if="relatedPosts.length > 0"
-        class="rounded-[1.5rem] bg-card p-6 shadow-card transition-colors duration-300"
+        class="rounded-[1.5rem] bg-card p-4 shadow-card transition-colors duration-300"
       >
         <h3
           class="mb-3 flex items-center gap-2 border-b border-color pb-3 font-bold text-main transition-colors"
         >
-          <i-ph-book-open-bold class="h-5 w-5 text-brand" /> 相关博客
+          <i-ph-book-open-bold class="h-4 w-4 text-brand" /> 相关博客
         </h3>
         <div class="flex flex-col">
           <a
@@ -232,19 +363,3 @@ onMounted(() => {
     </aside>
   </div>
 </template>
-
-<style scoped>
-/* 针对 prose 插件生成的代码块做一点美化修正 */
-:deep(.prose) {
-  overflow-wrap: break-word;
-}
-:deep(.prose pre) {
-  border-radius: 1rem;
-  /* 修复暗色模式下代码块的内阴影表现：使用 CSS 变量，或者索性让它足够微弱 */
-  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-:deep(.prose a) {
-  text-decoration-thickness: 2px;
-  text-underline-offset: 4px;
-}
-</style>

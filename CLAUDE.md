@@ -38,22 +38,34 @@ Blog-CC/
 │   ├── index.md                  # 首页入口，frontmatter: layout: home
 │   ├── blog/
 │   │   ├── index.md              # 博客列表页，frontmatter: layout: blog-index
-│   │   ├── posts.data.ts         # 数据层：glob 扫描 posts/*.md，提取 frontmatter
+│   │   ├── posts.data.ts         # 博文数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
 │   │   └── posts/                # 博客文章（.md，含 frontmatter）
 │   ├── resources/
-│   │   └── index.md              # 资源页，frontmatter: layout: resources-index
+│   │   ├── index.md              # 资源页，frontmatter: layout: resources-index
+│   │   ├── basstabs/
+│   │   │   ├── basstabs.data.ts  # BASS TAB 数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
+│   │   │   └── posts/            # BASS TAB 条目（.md，含 frontmatter.date）
+│   │   └── others/
+│   │       ├── others.data.ts    # 其他资源数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
+│   │       └── posts/            # 其他资源条目（.md，含 frontmatter）
 │   ├── public/                   # 静态资源（avatar.png 等）
 │   │   ├── alphatab/             # alphaTab 运行时静态镜像（mjs/core/worker/worklet）
 │   │   ├── font/                 # alphaTab 字体资源（Bravura.*）
 │   │   └── soundfont/            # alphaTab 音源资源（sonivox.sf2 / sonivox.sf3）
 │   └── .vitepress/
-│       ├── config.mts            # VitePress 配置（SEO、Vite 插件、optimizeDeps）
+│       ├── config.mts            # VitePress 配置（SEO、Shiki 代码高亮、Vite 插件、optimizeDeps）
+│       ├── shiki-langs/
+│       │   ├── index.mts         # 自定义/冷门语言注册表（供 markdown.languages 使用）
+│       │   ├── zeek.tmLanguage.json # vendored Zeek TextMate grammar
+│       │   └── NOTICE.zeek-license.txt # 上游 grammar 来源与许可说明
 │       └── theme/
-│           ├── index.ts          # 主题入口（注册 Layout、全局 CSS、Element Plus）
+│           ├── index.ts          # 主题入口（继承 VitePress DefaultTheme、注册 Layout、全局 CSS、Element Plus）
 │           ├── Layout.vue        # 路由分发器（按 frontmatter.layout 切换视图）
-│           ├── style.css         # 全局样式（Tailwind、CSS 变量主题系统、Element Plus 接管）
+│           ├── style.css         # 全局样式（Tailwind、CSS 变量主题系统、Element Plus 接管、围栏代码块固定主题）
+│           ├── data/
+│           │   └── latestUpdates.ts # 首页最新动态聚合层（混合博文/BASS TAB/其他资源，过滤最近 30 天）
 │           ├── components/
-│           │   ├── HomeView.vue          # 首页（个人信息卡 + 自动轮播 Tab）
+│           │   ├── HomeView.vue          # 首页（个人信息卡 + 最新动态时间轴 + 自动轮播 Tab）
 │           │   ├── BlogIndexView.vue     # 博客列表（搜索/筛选/排序/布局切换）
 │           │   ├── ArticleLayout.vue     # 文章详情（TOC 侧边栏、分享、相关文章）
 │           │   ├── SiteHeader.vue        # 顶部导航（路由激活状态、ThemeSwitcher）
@@ -78,10 +90,13 @@ Blog-CC/
 
 ```
 config.mts
+  └── markdown.theme = 'material-theme-palenight'（围栏代码块固定 Shiki 主题）
+  └── markdown.languages = customLanguages（注册 Zeek 等冷门语言 grammar）
   └── Vite plugins: unplugin-vue-components + unplugin-icons（图标自动导入）
   └── transformPageData(): 注入 Twitter Cards / Open Graph SEO 标签
 
 theme/index.ts
+  ├── extends DefaultTheme，保留 VitePress 原生代码块能力（复制按钮、语言标签、代码组等）
   ├── 注册 Layout.vue 为全局布局
   ├── 引入 style.css（Tailwind + CSS 变量 + Element Plus 样式接管）
   └── SSR 安全地异步加载 Element Plus（仅客户端）
@@ -93,32 +108,28 @@ Layout.vue（路由分发器）
   ├── frontmatter.layout === 'article'          → ArticleLayout.vue
   └── 默认                                       → <Content />（VitePress 原生渲染）
 
-posts.data.ts（数据层）
+posts.data.ts（博文数据层）
   └── createContentLoader('blog/posts/*.md') → 提取 { title, url, date, category, tags, summary, cover }
-      ↑ 被 BlogIndexView.vue 和 ArticleLayout.vue 共同消费
+      ↑ 被 BlogIndexView.vue、ArticleLayout.vue、latestUpdates.ts 共同消费
 
-BlogIndexView.vue
-  ├── 消费 posts.data.ts
-  ├── 本地计算过滤（keyword / tags / category / dateRange）+ 排序
-  ├── 使用 Element Plus：el-select、el-date-picker、el-input
-  └── 使用 utils/format.ts 格式化日期
+basstabs.data.ts（BASS TAB 数据层）
+  └── createContentLoader('resources/basstabs/posts/*.md') → 提取 { title, url, date, artist, genre, cover, ...links }
+      ↑ date 必填，用于首页最新动态时间轴的排序与过滤
+      ↑ 被 BassTabsView.vue 和 latestUpdates.ts 共同消费
 
-ArticleLayout.vue
-  ├── 消费 posts.data.ts（取相关文章）
-  ├── 读取 page.value.headers（VitePress 提取的 h2/h3，扁平化为 TOC）
-  ├── 使用 Element Plus：ElMessage
-  └── 使用 utils/format.ts 和 utils/copyText.ts
+others.data.ts（其他资源数据层）
+  └── createContentLoader('resources/others/posts/*.md') → 提取 { title, url, date, category, tags, summary, cover }
+      ↑ 被 OtherResourcesView.vue 和 latestUpdates.ts 共同消费
 
-ThemeSwitcher.vue
-  └── 向 <html> 写入 data-theme 属性 → CSS 变量切换 → localStorage 持久化
-      主题：default(Ocean) / forest / autumn / dark
+latestUpdates.ts（首页聚合层）
+  └── 合并 posts.data.ts / basstabs.data.ts / others.data.ts
+  └── 统一映射为 { type, typeLabel, title, url, date, cover, summary? }
+  └── 过滤最近 30 天内容并按 date.time 倒序输出
 
-SheetPlayer.vue
-  ├── 仅客户端 onMounted 中通过 `import(withBase('/alphatab/alphaTab.mjs'))` 动态加载 alphaTab
-  ├── `settings.core.scriptFile = withBase('/alphatab/alphaTab.mjs')`
-  ├── `settings.core.fontDirectory = withBase('/font/')`
-  ├── `settings.player.soundFont = withBase('/soundfont/sonivox.sf3')`
-  └── 依赖 `docs/public/alphatab/*` 中的静态 mjs/core/worker/worklet 文件，避免 VitePress 构建时 worker 路径失效
+HomeView.vue
+  ├── 消费 latestUpdates.ts
+  ├── 使用 Element Plus：el-timeline / el-timeline-item
+  └── 左侧栏展示混合时间轴（博文 / BASS TAB / 其他资源）
 ```
 
 ---
@@ -155,6 +166,19 @@ category: 分类名
 tags: [tag1, tag2]
 summary: 一段简短摘要（用于博客列表卡片）
 cover: /covers/my-cover.jpg   # 可选，相对于 public/ 的路径
+---
+```
+
+### BASS TAB Frontmatter 关键字段
+
+```yaml
+---
+layout: basstab-detail
+title: 曲目标题
+date: 2025-04-01   # 必填：首页最新动态依赖该字段做最近 30 天过滤与混排
+artist: 艺术家
+genre: 风格
+cover: /resources/basstabs/covers/example.png
 ---
 ```
 
@@ -219,29 +243,17 @@ cover: /covers/my-cover.jpg   # 可选，相对于 public/ 的路径
 ### 1. Breadcrumb.vue — 重复的死代码分支
 `Breadcrumb.vue:24` 的 `else if (route.path.startsWith("/blog/"))` 条件与上一个 `if` 完全相同，永远不会执行。此外，`/resources/` 等路由没有面包屑支持，需要补全。
 
-### 2. ResourcesIndexView.vue — 数据硬编码
-Bass Tabs 列表数据是硬编码在组件中的模拟数据，`cover` 和 `link` 路径均为占位符，文件尚不存在。建议迁移到独立数据文件或 Markdown frontmatter + `createContentLoader`。
-
-### 3. HomeView.vue — 最新动态区域为空
-"最新动态"时间轴的 `<div>` 占位符没有任何实际内容。目前渲染结果是空白。
-
-### 4. Element Plus — 全量引入，无 Tree Shaking
+### 2. Element Plus — 全量引入，无 Tree Shaking
 `theme/index.ts` 中使用 `import ElementPlus from 'element-plus'` 全量加载，会显著增大客户端 bundle。应改用按需导入（配合 `unplugin-vue-components` 的 `ElementPlusResolver`）。
 
-### 5. hugeicons 图标包未使用
+### 3. hugeicons 图标包未使用
 `@iconify-json/hugeicons` 已安装但在代码中搜索不到任何使用，可直接移除以减小 `node_modules` 体积。
 
-### 6. composables/ 目录为空
+### 4. composables/ 目录为空
 `docs/.vitepress/theme/composables/` 是空目录，可删除，或在添加实际 composable 时再创建。
 
-### 7. Google Fonts CDN
+### 5. Google Fonts CDN
 `style.css` 从 `fonts.googleapis.com` 加载字体，在中国大陆访问速度慢。可考虑将字体文件本地化到 `docs/public/fonts/` 并用 `@font-face` 引入。
 
-### 8. 封面图默认值引用不存在的文件
+### 6. 封面图默认值引用不存在的文件
 `config.mts` 中 fallback 封面图路径为 `/default-cover.jpg`，但 `docs/public/` 中无此文件，会导致社交分享预览图 404。
-
-### 9. BlogIndexView — "还原"按钮逻辑缺失
-"还原"按钮调用 `handleSearch()` 但未重置 `searchQueryInput`、`tagQueryInput`、`dateRangeInput`，点击后过滤条件不会清空。
-
-### 10. 日期处理不一致
-`posts.data.ts` 中 `date: frontmatter.date` 返回原始值，但 `BlogIndexView.vue` 中用 `new Date(post.date.string || post.date)` 做了兼容处理。建议在 `posts.data.ts` 的 `transform` 中统一调用 `formatDate()`，消除下游的防御性写法。

@@ -1,5 +1,6 @@
 <script setup>
-import { useData } from "vitepress";
+import { nextTick, onBeforeUnmount, onMounted, watch } from "vue";
+import { useData, useRoute } from "vitepress";
 import SiteHeader from "./components/SiteHeader.vue";
 import HomeView from "./components/HomeView.vue";
 import BlogIndexView from "./components/BlogIndexView.vue";
@@ -8,17 +9,59 @@ import ArticleLayout from "./components/ArticleLayout.vue";
 import BassTabLayout from "./components/BassTabLayout.vue";
 import Breadcrumb from "./components/Breadcrumb.vue";
 
+import DefaultTheme from "vitepress/theme";
+
 const { frontmatter } = useData();
+const route = useRoute();
+
+const scrollToHash = () => {
+  const hash = window.location.hash;
+  if (!hash) return;
+
+  const id = decodeURIComponent(hash.slice(1));
+  const target = document.getElementById(id);
+  if (!target) return;
+
+  target.scrollIntoView({
+    behavior: "smooth",
+    block: "start",
+  });
+};
+
+const handleHashChange = () => {
+  nextTick(scrollToHash);
+};
+
+onMounted(() => {
+  handleHashChange();
+  window.addEventListener("hashchange", handleHashChange);
+});
+
+onBeforeUnmount(() => {
+  window.removeEventListener("hashchange", handleHashChange);
+});
+
+watch(
+  () => route.path,
+  () => {
+    handleHashChange();
+  },
+);
 </script>
 
 <template>
+  <DefaultTheme.Layout v-if="frontmatter.layout === 'doc'" />
   <div
+    v-else
     class="flex h-screen flex-col overflow-hidden bg-base font-sans text-main transition-colors duration-300 selection:bg-brand selection:text-white"
   >
     <SiteHeader />
     <Breadcrumb />
 
-    <main class="custom-scrollbar w-full flex-1 overflow-y-auto pt-5">
+    <main
+      id="site-main-scroll"
+      class="custom-scrollbar w-full flex-1 overflow-y-auto pt-5"
+    >
       <HomeView v-if="frontmatter.layout === 'home'" />
       <BlogIndexView v-else-if="frontmatter.layout === 'blog-index'" />
       <ResourcesIndexView
@@ -26,13 +69,6 @@ const { frontmatter } = useData();
       />
       <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
       <BassTabLayout v-else-if="frontmatter.layout === 'basstab-detail'" />
-
-      <div
-        v-else
-        class="mx-auto max-w-4xl rounded-[2rem] bg-card p-8 shadow-card transition-colors duration-300 md:p-12"
-      >
-        <Content class="prose prose-lg max-w-none" />
-      </div>
     </main>
   </div>
 </template>

@@ -429,5 +429,3 @@ const customBlankIcon = h("div");
     </div>
   </div>
 </template>
-
-<style scoped></style>

@@ -180,9 +180,18 @@ button.el-button:hover {
   color: var(--el-button-hover-text-color) !important;
 }
 
+/* 修复 VitePress 默认主题重置了原生按钮边框 */
+button.border:not(.el-button) {
+  border-style: solid;
+  border-width: 1px;
+}
+
 /* ==========================================================
    VitePress 围栏代码块样式（固定视觉主题）
    ========================================================== */
+.article-content :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 96px;
+}
 .article-content div[class*="language-"] {
   position: relative;
   margin: 1.5rem 0;
@@ -215,6 +224,52 @@ button.el-button:hover {
   min-height: 1.7em;
 }
 
+.article-content div[class*="language-"] > button.copy {
+  direction: ltr;
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 3;
+  border: 1px solid var(--vp-code-copy-code-border-color);
+  border-radius: 4px;
+  width: 40px;
+  height: 40px;
+  background-color: var(--vp-code-copy-code-bg);
+  opacity: 0;
+  cursor: pointer;
+  background-image: var(--vp-icon-copy);
+  background-position: 50%;
+  background-size: 20px;
+  background-repeat: no-repeat;
+  transition:
+    border-color 0.25s,
+    background-color 0.25s,
+    opacity 0.25s;
+}
+
+.article-content div[class*="language-"]:hover > button.copy,
+.article-content div[class*="language-"] > button.copy:focus {
+  opacity: 1;
+}
+
+.article-content div[class*="language-"] > button.copy:hover,
+.article-content div[class*="language-"] > button.copy.copied {
+  border-color: var(--vp-code-copy-code-hover-border-color);
+  background-color: var(--vp-code-copy-code-hover-bg);
+}
+
+.article-content div[class*="language-"] > button.copy.copied,
+.article-content div[class*="language-"] > button.copy:hover.copied {
+  background-color: var(--vp-code-copy-code-hover-bg);
+  background-image: var(--vp-icon-copied);
+  border-radius: 4px;
+}
+
+.article-content div[class*="language-"] > button.copy.copied::before,
+.article-content div[class*="language-"] > button.copy:hover.copied::before {
+  display: none;
+}
+
 .article-content div[class*="language-"] > span.lang {
   position: absolute;
   top: 0.55rem;
@@ -225,6 +280,14 @@ button.el-button:hover {
   letter-spacing: 0.04em;
   text-transform: lowercase;
   color: var(--code-block-lang);
+  transition:
+    color 0.4s,
+    opacity 0.4s;
+}
+
+.article-content div[class*="language-"]:hover > button.copy + span.lang,
+.article-content div[class*="language-"] > button.copy:focus + span.lang {
+  opacity: 0;
 }
 
 .article-content .vp-code-block-title {
@@ -262,4 +325,9 @@ button.el-button:hover {
 .article-content div[class*="language-"]::-webkit-scrollbar-track,
 .article-content div[class*="language-"] pre::-webkit-scrollbar-track {
   background: transparent;
+}
+
+.article-content :not(pre) > code {
+  color: var(--color-brand);
+  background-color: var(--color-brand-light);
 }

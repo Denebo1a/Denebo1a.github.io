@@ -17,103 +17,6 @@ summary: 基于VitePress的个人博客网站搭建教程！
 -   **工作原理：** 底层的**事件引擎 (Event Engine)** 负责抓取网络数据包，将其解析为中性的、高层次的“事件”（如“建立了一个新连接”、“收到一个 HTTP 请求”）。上层的**策略脚本解释器 (Policy Script Interpreter)** 则执行用户编写的脚本，决定如何处理这些事件。
     
 -   **核心优势：** 它不仅仅用于“检测报警”，更擅长于“网络行为记录与状态追踪”。它默认会生成丰富且结构化的日志文件（如 `conn.log`, `http.log`, `dns.log`），为数字取证和深层威胁追踪提供全方位的数据支持。
--   
-### 正确的修改建议
-
-为了让代码既符合逻辑，又具有高可读性，强烈建议将变量名从 `total_req` 修改为 `total_resp` 或 `all_response`，使其与课件中公式的语义完全对齐。
-
-```zeek [test.zeek]
-# 1. 修改 Record 的字段命名
-type ScanStats: record {
-    total_resp: count;         # 修改为 total_resp：记录总响应数
-    total_404: count;          # 记录 404 响应总数
-    unique_urls: set[string];  # 记录返回 404 的唯一 URL 集合
-};
-
-# ... 省略中间代码 ...
-
-# 2. 计算比例时使用新变量名
-local ratio_404: double = (s$total_404 + 0.0) / (s$total_resp + 0.0);
-
-# ... 省略中间代码 ...
-
-# 3. 在 http_reply 事件结尾处累加响应数
-ip_stats[src_ip]$total_resp += 1;
-```
-
-```typescript [test.vue] {1}
-<script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
-import { Icon } from "@iconify/vue";
-
-// 1. 修正主题定义：default 现在对应海洋蓝 (Ocean)
-const themes = [
-  {
-    id: "default",
-    name: "Ocean",
-    color: "#0284c7",
-    icon: "ph:drop-half-bottom-bold",
-  },
-  {
-    id: "forest",
-    name: "Forest",
-    color: "#0f766e",
-    icon: "ph:tree-evergreen-bold",
-  },
-  { id: "autumn", name: "Autumn", color: "#ea580c", icon: "ph:leaf-bold" },
-  { id: "dark", name: "Dark", color: "#f8fafc", icon: "ph:moon-stars-bold" }, // 暗黑模式预览点使用白色
-];
-
-const currentTheme = ref("default");
-const isOpen = ref(false);
-const dropdownRef = ref(null);
-
-// 2. 点击外部关闭下拉菜单的逻辑
-const handleClickOutside = (event) => {
-  if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
-    isOpen.value = false;
-  }
-};
-
-onMounted(() => {
-  // 读取本地存储
-  const savedTheme = localStorage.getItem("blog-theme") || "default";
-  currentTheme.value = savedTheme;
-  applyTheme(savedTheme);
-
-  // 绑定全局点击事件
-  document.addEventListener("click", handleClickOutside);
-});
-
-onUnmounted(() => {
-  document.removeEventListener("click", handleClickOutside);
-});
-
-// 监听主题变化
-watch(currentTheme, (newTheme) => {
-  applyTheme(newTheme);
-  localStorage.setItem("blog-theme", newTheme);
-});
-
-const applyTheme = (themeId) => {
-  if (themeId === "default") {
-    document.documentElement.removeAttribute("data-theme");
-  } else {
-    document.documentElement.setAttribute("data-theme", themeId);
-  }
-};
-
-const selectTheme = (id) => {
-  currentTheme.value = id;
-  isOpen.value = false; // 选完后自动关闭
-};
-
-// 计算当前选中的主题对象（用于按钮显示）
-const activeTheme = computed(
-  () => themes.find((t) => t.id === currentTheme.value) || themes[0],
-);
-</script>
-```
 
 ## 二、 Zeek 脚本语言特性 (Script Language Features)
 
@@ -148,9 +51,6 @@ Zeek 脚本的核心执行单元是**事件 (Event)**，而不是传统的按顺
 -   **`set` (集合)：** 自动去重的数据结构，极其适合成员测试和统计“唯一性”（如统计单一 IP 关联的 _不同_ User-Agent 数量）。
     
 -   **`record` (记录/结构体)：** 用于将多个相关的状态打包在一起。Zeek 绝大多数的内置状态（如 `connection`）都是通过 record 组织的。
-    
-
----
 
 ## 三、 实验演示与经验总结 (Practical Experience)
 
@@ -159,8 +59,30 @@ Zeek 脚本的核心执行单元是**事件 (Event)**，而不是传统的按顺
 1.  **Experiment III (代理检测)：** 监控同一源 IP 是否关联了 3 个及以上的不同 User-Agent。
     
 2.  **Homework IV (扫描器检测)：** 在 10 分钟窗口内，监控某 IP 的 404 响应总数及比例，识别恶意目录扫描行为。
-    
 
+### 代码示例
+
+为了让代码既符合逻辑，又具有高可读性，强烈建议将变量名从 `total_req` 修改为 `total_resp` 或 `all_response`，使其与课件中公式的语义完全对齐。
+
+```zeek [test.zeek]
+# 1. 修改 Record 的字段命名
+type ScanStats: record {
+    total_resp: count;         # 修改为 total_resp：记录总响应数
+    total_404: count;          # 记录 404 响应总数
+    unique_urls: set[string];  # 记录返回 404 的唯一 URL 集合
+};
+
+# ... 省略中间代码 ...
+
+# 2. 计算比例时使用新变量名
+local ratio_404: double = (s$total_404 + 0.0) / (s$total_resp + 0.0);
+
+# ... 省略中间代码 ...
+
+# 3. 在 http_reply 事件结尾处累加响应数
+ip_stats[src_ip]$total_resp += 1;
+```
+    
 结合代码调试与编写过程，我们总结出以下宝贵的实战经验与避坑指南：
 
 ### 经验结论 1：复杂状态追踪依赖于全局变量与嵌套结构

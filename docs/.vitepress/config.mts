@@ -3,6 +3,7 @@ import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
 import { customLanguages } from './shiki-langs/index.mts'
+import { generateSidebar } from 'vitepress-sidebar'
 
 const HOSTNAME = "https://Denebo1a.github.io"
 
@@ -12,7 +13,7 @@ export default defineConfig({
 
   // 显式要求 VitePress 提取 Markdown 标题供客户端使用
   markdown: {
-    theme: 'material-theme-palenight',
+    theme: 'github-dark',
     languages: customLanguages,
     headers: {
       // 提取 h2 和 h3 标题
@@ -55,6 +56,56 @@ export default defineConfig({
       ['meta', { property: 'og:image', content: imageUrl }],
       ['meta', { property: 'og:url', content: canonicalUrl }]
     )
+  },
+  // 配置默认文档布局的侧边栏
+  themeConfig: {
+    siteTitle: "← 离开裏世界",
+    nav: [
+      {
+        text: '入口',
+        link: '/pandora/Welcome/intro',
+        activeMatch: '/pandora/Welcome/',
+      },
+      {
+        text: '女装日记',
+        link: '/pandora/HimitsuDiary/intro',
+        activeMatch: '/pandora/HimitsuDiary/',
+      },
+      {
+        text: '速写本',
+        link: 'pandora/sketchbook/intro',
+        activeMatch: '/pandora/sketchbook/',
+      },
+    ],
+    sidebar: generateSidebar([
+      {
+        documentRootPath: 'docs', 
+        scanStartPath: 'pandora/Welcome', 
+        resolvePath: '/pandora/Welcome/', 
+        useTitleFromFileHeading: true, 
+        useFolderTitleFromIndexFile: true, 
+        collapsed: true, 
+        sortMenusByName: true 
+      },
+      {
+        documentRootPath: 'docs', 
+        scanStartPath: 'pandora/HimitsuDiary', 
+        resolvePath: '/pandora/HimitsuDiary/', 
+        useTitleFromFileHeading: true, 
+        useFolderTitleFromIndexFile: true, 
+        collapsed: true, 
+        sortMenusByName: true 
+      },
+      {
+        documentRootPath: 'docs', 
+        scanStartPath: 'pandora/Sketchbook', 
+        resolvePath: '/pandora/Sketchbook/', 
+        useTitleFromFileHeading: true, 
+        useFolderTitleFromIndexFile: true, 
+        collapsed: true, 
+        sortMenusByName: true 
+      }
+    ])
   },
   vite: {
     optimizeDeps: {

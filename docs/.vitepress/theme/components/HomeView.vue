@@ -98,7 +98,7 @@ const handleSecretClick = () => {
     ElMessage.warning("月亮末日慢慢逼近……");
   }
   if (clickCount.value >= 10) {
-    router.go("/pandora/");
+    router.go("/pandora/intro");
     ElMessage.success("这是哪里来着...");
     clickCount.value = 0;
   } else {
@@ -247,7 +247,7 @@ const handleSecretClick = () => {
                       >{{ item.typeLabel }}</span
                     >
                     <span
-                      class="group text-[15px] font-bold leading-relaxed text-main transition-colors group-hover:text-brand"
+                      class="font group text-[15px] leading-relaxed text-muted transition-colors group-hover:text-brand"
                     >
                       {{ item.title }}
                     </span>
@@ -266,19 +266,19 @@ const handleSecretClick = () => {
     </aside>
 
     <section
-      class="flex h-full flex-col rounded-[2.5rem] bg-card p-6 shadow-card transition-colors duration-300 md:p-8 lg:col-span-8"
+      class="flex h-full flex-col rounded-[2.5rem] bg-card p-6 shadow-card ring-1 ring-alt transition-colors duration-300 md:p-8 lg:col-span-8"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
     >
-      <div class="mb-4 grid grid-cols-3 gap-3 sm:gap-6">
+      <div class="mb-6 grid grid-cols-3 gap-3 sm:gap-6">
         <button
           v-for="(tab, index) in tabs"
           :key="tab.id"
           @click="setTab(index)"
-          class="group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border py-4 transition-all duration-300 sm:py-6"
+          class="group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl py-4 transition-all duration-300 sm:py-6"
           :class="
             activeTabIndex === index
-              ? 'border-1 border-color bg-gradient-to-b from-[var(--color-brand-light)] to-[var(--color-bg-card)] text-brand shadow-card'
+              ? 'bg-gradient-to-b from-[var(--color-brand-light)] to-[var(--color-bg-card)] text-brand shadow-card ring-2 ring-alt'
               : 'bg-light border-transparent text-muted hover:bg-alt hover:text-main'
           "
         >
