@@ -62,7 +62,7 @@ layout: doc
 - 注意不要让周围的人感到困扰，但也不要怯于在适当的场合得体地表现自己
 
 ::: info 相关阅读
-关于这一部分的进一步讨论，您可以阅读[心理建设](/docs/pandora/HimitsuDiary/mental-health)一章。
+关于这一部分的进一步讨论，您可以阅读[心理建设](/pandora/HimitsuDiary/mental-health)一章。
 :::
 
 感谢您读到这里，不管怎样，祝愿您能够健康积极地享受女装活动~
