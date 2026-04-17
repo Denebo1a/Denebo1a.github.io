@@ -73,8 +73,8 @@ export default defineConfig({
       },
       {
         text: '速写本',
-        link: 'pandora/sketchbook/intro',
-        activeMatch: '/pandora/sketchbook/',
+        link: 'pandora/Sketchbook/intro',
+        activeMatch: '/pandora/Sketchbook/',
       },
     ],
     sidebar: generateSidebar([
