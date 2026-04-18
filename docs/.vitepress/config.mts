@@ -63,12 +63,12 @@ export default defineConfig({
     nav: [
       {
         text: '入口',
-        link: '/pandora/Welcome/intro',
+        link: '/pandora/Welcome/01-intro',
         activeMatch: '/pandora/Welcome/',
       },
       {
         text: '女装日记',
-        link: '/pandora/HimitsuDiary/intro',
+        link: '/pandora/HimitsuDiary/01-start-guide/01-intro',
         activeMatch: '/pandora/HimitsuDiary/',
       },
       {
@@ -85,7 +85,8 @@ export default defineConfig({
         useTitleFromFileHeading: true, 
         useFolderTitleFromIndexFile: true, 
         collapsed: true, 
-        sortMenusByName: true 
+        sortMenusByName: false, 
+        sortMenusOrderNumericallyFromLink: true,
       },
       {
         documentRootPath: 'docs', 
@@ -94,7 +95,8 @@ export default defineConfig({
         useTitleFromFileHeading: true, 
         useFolderTitleFromIndexFile: true, 
         collapsed: true, 
-        sortMenusByName: true 
+        sortMenusByName: false, 
+        sortMenusOrderNumericallyFromLink: true,
       },
       {
         documentRootPath: 'docs', 
@@ -103,7 +105,8 @@ export default defineConfig({
         useTitleFromFileHeading: true, 
         useFolderTitleFromIndexFile: true, 
         collapsed: true, 
-        sortMenusByName: true 
+        sortMenusByName: false, 
+        sortMenusOrderNumericallyFromLink: true,
       }
     ])
   },

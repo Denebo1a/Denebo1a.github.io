@@ -98,7 +98,7 @@ const handleSecretClick = () => {
     ElMessage.warning("月亮末日慢慢逼近……");
   }
   if (clickCount.value >= 10) {
-    router.go("/pandora/Welcome/intro");
+    router.go("/pandora/Welcome/01-intro");
     ElMessage.success("这是哪里来着...");
     clickCount.value = 0;
   } else {
