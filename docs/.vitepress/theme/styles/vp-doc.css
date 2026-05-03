@@ -1,0 +1,105 @@
+.article-content :is(h2, h3, h4, h5, h6) {
+  scroll-margin-top: 96px;
+}
+
+.article-content :is(h2, h3, h4, h5, h6) .header-anchor {
+  color: var(--color-brand);
+}
+
+.article-content :is(h2, h3, h4, h5, h6) .header-anchor:hover {
+  color: var(--color-brand-dark);
+}
+
+/* 选中文字样式 */
+.article-content ::selection {
+  background-color: var(--color-brand);
+  color: #ffffff; /* 确保背景变色后，文字依然有极高的对比度和可读性 */
+}
+
+/* 引用块样式 */
+.article-content blockquote {
+  border-radius: 0 0.5rem 0.5rem 0;
+  padding: 6px 12px;
+  border: 1px solid var(--color-border);
+  border-left: 2px solid var(--color-brand);
+}
+
+/* 行内代码块样式 */
+.article-content :not(pre) > code {
+  color: var(--color-text-muted);
+  background-color: var(--color-bg-alt);
+  font-weight: bold;
+  transition:
+    color 0.3s,
+    background-color 0.3s;
+}
+
+.article-content :not(pre) > code:hover {
+  color: var(--color-brand);
+  background-color: var(--color-brand-light);
+}
+
+/* 链接样式 */
+.article-content a:not(.header-anchor) {
+  position: relative;
+  display: inline-flex;
+  color: var(--color-brand);
+  text-decoration: none;
+  padding: 2px 4px;
+  z-index: 1;
+}
+
+.article-content a:not(.header-anchor):hover {
+  color: var(--color-brand-dark);
+}
+
+.article-content a:not(.header-anchor)::before {
+  content: "";
+  position: absolute;
+  /* 初始状态就铺满整个高度，但通过 scaleY 压缩成一条线 */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background-color: var(--color-brand);
+  opacity: 0.8;
+  border-radius: 4px;
+  z-index: -1;
+  /* transform-origin 设置在底部，使其从下往上生长 */
+  transform-origin: bottom center;
+  /* 初始高度压缩到 1px 左右 */
+  transform: scaleY(calc(1px / 100%)) scaleX(0.9);
+  transition:
+    transform 0.2s cubic-bezier(0.2, 1, 0.2, 1),
+    opacity 0.2s;
+}
+
+.article-content a:not(.header-anchor):hover::before {
+  /* 恢复原本高度和宽度 */
+  transform: scaleY(1) scaleX(1);
+  opacity: 0.15; /* 降低透明度作为背景 */
+}
+
+/* 无序列表与有序列表 */
+.article-content ul {
+  list-style-type: none;
+  padding-left: 1.5rem;
+}
+
+.article-content ol li::marker {
+  color: var(--color-brand);
+  font-weight: bold;
+}
+
+.article-content ul li {
+  position: relative;
+}
+
+.article-content ul li::before {
+  content: "✦";
+  position: absolute;
+  left: -1.2rem;
+  top: 0;
+  color: var(--color-brand);
+  font-size: 1.1em;
+}

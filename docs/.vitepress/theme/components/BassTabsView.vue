@@ -53,7 +53,7 @@ const getLinks = (tab) => {
 </script>
 
 <template>
-  <div class="relative flex w-full gap-0">
+  <div class="relative flex min-h-[160vh] w-full gap-0">
     <!-- 左侧艺术家栏 -->
     <aside
       class="fixed right-6 top-1/2 flex max-h-[calc(100vh-5rem)] w-16 shrink-0 flex-col items-center gap-3 overflow-y-auto rounded-full border border-color bg-card py-2"

@@ -1,0 +1,9 @@
+html {
+  color: var(--color-text-main);
+  transition: color 0.3s ease;
+}
+
+button.border:not(.el-button) {
+  border-style: solid;
+  border-width: 1px;
+}

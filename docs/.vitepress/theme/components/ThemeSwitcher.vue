@@ -1,34 +1,11 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted, watch } from "vue";
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useTheme } from "../composables/useTheme";
 
-import oceanIcon from "~icons/ph/drop-half-bottom-bold";
-import forestIcon from "~icons/ph/tree-evergreen-bold";
-import autumnIcon from "~icons/ph/leaf-bold";
-import darkIcon from "~icons/ph/moon-stars-bold";
-
-// 其他图标...
-const themes = [
-  {
-    id: "default",
-    name: "Ocean",
-    color: "#0284c7",
-    icon: oceanIcon,
-  },
-  {
-    id: "forest",
-    name: "Forest",
-    color: "#0f766e",
-    icon: forestIcon,
-  },
-  { id: "autumn", name: "Autumn", color: "#ea580c", icon: autumnIcon },
-  { id: "dark", name: "Dark", color: "#f8fafc", icon: darkIcon }, // 暗黑模式预览点使用白色
-];
-
-const currentTheme = ref("default");
+const { themes, currentTheme, setTheme, initTheme } = useTheme();
 const isOpen = ref(false);
 const dropdownRef = ref(null);
 
-// 2. 点击外部关闭下拉菜单的逻辑
 const handleClickOutside = (event) => {
   if (dropdownRef.value && !dropdownRef.value.contains(event.target)) {
     isOpen.value = false;
@@ -36,12 +13,7 @@ const handleClickOutside = (event) => {
 };
 
 onMounted(() => {
-  // 读取本地存储
-  const savedTheme = localStorage.getItem("blog-theme") || "default";
-  currentTheme.value = savedTheme;
-  applyTheme(savedTheme);
-
-  // 绑定全局点击事件
+  initTheme();
   document.addEventListener("click", handleClickOutside);
 });
 
@@ -49,26 +21,11 @@ onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside);
 });
 
-// 监听主题变化
-watch(currentTheme, (newTheme) => {
-  applyTheme(newTheme);
-  localStorage.setItem("blog-theme", newTheme);
-});
-
-const applyTheme = (themeId) => {
-  if (themeId === "default") {
-    document.documentElement.removeAttribute("data-theme");
-  } else {
-    document.documentElement.setAttribute("data-theme", themeId);
-  }
-};
-
 const selectTheme = (id) => {
-  currentTheme.value = id;
-  isOpen.value = false; // 选完后自动关闭
+  setTheme(id);
+  isOpen.value = false;
 };
 
-// 计算当前选中的主题对象（用于按钮显示）
 const activeTheme = computed(
   () => themes.find((t) => t.id === currentTheme.value) || themes[0],
 );

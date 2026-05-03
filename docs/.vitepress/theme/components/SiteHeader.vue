@@ -1,118 +1,130 @@
 <script setup>
-import { useRoute } from "vitepress";
-import ThemeSwitcher from "./ThemeSwitcher.vue";
+import { computed } from "vue";
+import Index from "./header/Index.vue";
+import Title from "./header/Title.vue";
+import SettingsButton from "./header/SettingsButton.vue";
+import { useBreadcrumbs } from "../composables/useBreadcrumbs";
+import { useScrollPersistence } from "../composables/useScrollPersistence";
 
-const route = useRoute();
+import HomeIcon from "~icons/ph/house";
+import ArticleIcon from "~icons/ph/article";
+import ResourcesIcon from "~icons/ph/package";
+import StudioIcon from "~icons/ph/atom";
 
-// 辅助函数：判断当前路径是否处于激活状态
-const isActive = (path) => {
-  if (path === "/") {
-    return route.path === "/";
-  }
-  return route.path.startsWith(path);
+const { currentPageLabel, section } = useBreadcrumbs();
+const { progress } = useScrollPersistence();
+
+const navItems = [
+  {
+    url: "/",
+    title: "首页",
+    icon: HomeIcon,
+    section: "home",
+  },
+  {
+    url: "/blog/",
+    title: "博客",
+    icon: ArticleIcon,
+    section: "blog",
+  },
+  {
+    url: "/resources/",
+    title: "资源",
+    icon: ResourcesIcon,
+    section: "resources",
+  },
+  {
+    url: "/studio/",
+    title: "Studio",
+    icon: StudioIcon,
+    section: "studio",
+  },
+];
+
+const sectionTitleMap = {
+  home: "首页",
+  blog: "博客",
+  resources: "资源",
+  studio: "Studio",
 };
+
+const isScrolled = computed(() => progress.value > 0);
+
+const shouldShowContextLabel = computed(() => {
+  if (!isScrolled.value) return false;
+  if (!currentPageLabel.value) return false;
+
+  const sectionTitle = sectionTitleMap[section.value] ?? "";
+  return currentPageLabel.value !== sectionTitle;
+});
+
+const isActive = (targetSection) => section.value === targetSection;
 </script>
 
 <template>
   <header
-    class="relative sticky top-0 z-50 flex h-14 w-full items-center justify-between px-4 py-2 shadow-sm backdrop-blur-md transition-colors duration-300"
-    style="
-      background-color: color-mix(
-        in srgb,
-        var(--color-bg-card) 85%,
-        transparent
-      );
+    class="relative sticky top-0 z-50 flex h-14 w-full items-center justify-between px-4 py-2 transition-all duration-300"
+    :class="
+      isScrolled
+        ? 'shadow-sm backdrop-blur-md'
+        : 'bg-transparent shadow-none backdrop-blur-none'
+    "
+    :style="
+      isScrolled
+        ? {
+            backgroundColor: 'var(--color-bg-card)',
+          }
+        : { backgroundColor: 'transparent' }
     "
   >
-    <div class="flex items-center gap-1">
-      <a
-        href="/"
-        class="flex items-center rounded-lg px-1 py-0.5 text-2xl font-bold tracking-tight text-main transition-colors duration-200 hover:bg-brand-light"
+    <Title :isHeaderTransparent="!shouldShowContextLabel" />
+
+    <div class="hidden min-w-0 flex-1 items-center justify-center px-8 md:flex">
+      <div
+        class="flex min-w-0 items-center duration-300 ease-out will-change-[gap]"
+        style="transition-property: gap"
+        :class="shouldShowContextLabel ? 'gap-4' : 'gap-0'"
       >
-        Dene<span class="text-brand">Blog</span>
-      </a>
-      <a
-        target="_blank"
-        rel="noopener noreferrer"
-        href="https://github.com/Denebo1a/Denebo1a.github.io"
-        class="flex h-8 w-8 items-center justify-center rounded-xl text-main transition-colors hover:bg-brand-light hover:text-brand"
-      >
-        <i-ant-design-github-filled class="h-5 w-5" />
-      </a>
+        <!-- 左侧：页面标题标签 -->
+        <div
+          class="grid duration-300 ease-out will-change-[grid-template-columns,opacity]"
+          style="transition-property: grid-template-columns, opacity"
+          :class="
+            shouldShowContextLabel
+              ? 'grid-cols-[1fr] opacity-100'
+              : 'grid-cols-[0fr] opacity-0'
+          "
+        >
+          <div class="min-w-0 overflow-hidden">
+            <span
+              class="text-medium block whitespace-nowrap font-bold text-main duration-300 ease-out will-change-transform"
+              style="transition-property: transform"
+              :class="
+                shouldShowContextLabel ? 'translate-x-0' : '-translate-x-4'
+              "
+            >
+              {{ currentPageLabel }}
+            </span>
+          </div>
+        </div>
+
+        <!-- 右侧：导航栏容器 -->
+        <nav class="flex shrink-0 items-center gap-3 text-sm font-semibold">
+          <Index
+            v-for="item in navItems"
+            :key="item.url"
+            :url="item.url"
+            :ActiveStatus="isActive(item.section)"
+            :icon="item.icon"
+            :title="item.title"
+            :compact="isScrolled"
+          />
+        </nav>
+      </div>
     </div>
 
-    <nav class="hidden gap-8 text-sm font-semibold text-muted md:flex">
-      <a
-        href="/"
-        class="group border-b-2 pb-1 transition-colors duration-200 hover:text-brand-dark"
-        :class="
-          isActive('/') ? 'border-brand text-brand' : 'border-transparent'
-        "
-      >
-        <div class="relative flex items-center gap-0.5">
-          <i-ph-house class="group-hover:hiddens block h-4 w-4 sm:h-5 sm:w-5" />
-          <i-ph-house-duotone
-            class="absolute left-0 top-0 hidden h-4 w-4 group-hover:block sm:h-5 sm:w-5"
-          />
-          <span>首页</span>
-        </div>
-      </a>
-
-      <a
-        href="/blog/"
-        class="group border-b-2 pb-1 transition-colors duration-200 hover:text-brand-dark"
-        :class="
-          isActive('/blog') ? 'border-brand text-brand' : 'border-transparent'
-        "
-      >
-        <div class="relative flex items-center gap-0.5">
-          <i-ph-article
-            class="group-hover:hiddens block h-4 w-4 sm:h-5 sm:w-5"
-          />
-          <i-ph-article-duotone
-            class="absolute left-0 top-0 hidden h-4 w-4 group-hover:block sm:h-5 sm:w-5"
-          />
-          <span>博客</span>
-        </div>
-      </a>
-      <a
-        href="/resources/"
-        class="group border-b-2 pb-1 transition-colors duration-200 hover:text-brand-dark"
-        :class="
-          isActive('/resources')
-            ? 'border-brand text-brand'
-            : 'border-transparent'
-        "
-      >
-        <div class="relative flex items-center gap-0.5">
-          <i-ph-package
-            class="group-hover:hiddens block h-4 w-4 sm:h-5 sm:w-5"
-          />
-          <i-ph-package-duotone
-            class="absolute left-0 top-0 hidden h-4 w-4 group-hover:block sm:h-5 sm:w-5"
-          />
-          <span>资源</span>
-        </div>
-      </a>
-      <a
-        href="/studio/"
-        class="group border-b-2 pb-1 transition-colors duration-200 hover:text-brand-dark"
-        :class="
-          isActive('/studio') ? 'border-brand text-brand' : 'border-transparent'
-        "
-      >
-        <div class="relative flex items-center gap-0.5">
-          <i-ph-atom class="group-hover:hiddens block h-4 w-4 sm:h-5 sm:w-5" />
-          <i-ph-atom-duotone
-            class="absolute left-0 top-0 hidden h-4 w-4 group-hover:block sm:h-5 sm:w-5"
-          />
-          <span>Studio</span>
-        </div>
-      </a>
-    </nav>
-
     <div class="flex shrink-0 items-center justify-end gap-4">
-      <ThemeSwitcher />
+      <SettingsButton />
     </div>
   </header>
 </template>

@@ -1,0 +1,49 @@
+html,
+html[data-theme] {
+  --el-font-family: "Inter", "Noto Sans SC", sans-serif !important;
+  --el-color-primary: var(--color-brand) !important;
+  --el-color-primary-light-3: var(--color-brand-light) !important;
+  --el-color-primary-light-5: var(--color-brand-light) !important;
+  --el-color-primary-light-7: var(--color-brand-light) !important;
+  --el-color-primary-light-8: var(--color-brand-light) !important;
+  --el-color-primary-light-9: var(--color-brand-light) !important;
+  --el-color-primary-dark-2: var(--color-brand-dark) !important;
+
+  --el-bg-color: var(--color-bg-base) !important;
+  --el-bg-color-overlay: var(--color-bg-card) !important;
+  --el-fill-color-blank: var(--color-bg-card) !important;
+  --el-fill-color-light: var(--color-bg-alt) !important;
+
+  --el-text-color-primary: var(--color-text-main) !important;
+  --el-text-color-regular: var(--color-text-muted) !important;
+  --el-border-color: var(--color-border) !important;
+  --el-border-color-light: var(--color-border) !important;
+  --el-border-color-lighter: var(--color-border) !important;
+
+  --el-border-radius-base: 0.75rem !important;
+  --el-border-radius-small: 0.5rem !important;
+  --el-box-shadow: var(--shadow-card) !important;
+  --el-box-shadow-light: var(--shadow-card) !important;
+}
+
+html.dark {
+  --el-color-primary: var(--color-brand) !important;
+  --el-color-primary-light-3: var(--color-brand-dark) !important;
+  --el-color-primary-light-9: var(--color-brand-light) !important;
+
+  --el-bg-color: var(--color-bg-base) !important;
+  --el-bg-color-overlay: var(--color-bg-card) !important;
+  --el-fill-color-blank: var(--color-bg-card) !important;
+}
+
+button.el-button {
+  background-color: var(--el-button-bg-color) !important;
+  border-color: var(--el-button-border-color) !important;
+  color: var(--el-button-text-color) !important;
+}
+
+button.el-button:hover {
+  background-color: var(--el-button-hover-bg-color) !important;
+  border-color: var(--el-button-hover-border-color) !important;
+  color: var(--el-button-hover-text-color) !important;
+}

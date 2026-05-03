@@ -7,73 +7,162 @@ import BlogIndexView from "./components/BlogIndexView.vue";
 import ResourcesIndexView from "./components/ResourcesIndexView.vue";
 import ArticleLayout from "./components/ArticleLayout.vue";
 import BassTabLayout from "./components/BassTabLayout.vue";
-import Breadcrumb from "./components/Breadcrumb.vue";
+import Breadcrumb from "./components/overlays/Breadcrumb.vue";
+import BackgroundCover from "./components/BackgroundCover.vue";
+import SiteFooter from "./components/SiteFooter.vue";
+import ToolBar from "./components/overlays/ToolBar.vue";
+import ContextMenu from "./components/overlays/ContextMenu.vue";
+import { useTheme } from "./composables/useTheme";
+import { useScrollPersistence } from "./composables/useScrollPersistence";
 
 import DefaultTheme from "vitepress/theme";
 
 const { frontmatter } = useData();
 const route = useRoute();
+const { initTheme } = useTheme();
+const {
+  bindScrollRoot,
+  unbindScrollRoot,
+  saveScrollPosition,
+  restoreScrollPosition,
+  syncProgress,
+  getScrollTop,
+} = useScrollPersistence();
+
+const isArticleLayout = () => frontmatter.value.layout === "article";
+
+const getScrollRoot = () => document.getElementById("site-main-scroll");
 
 const scrollToHash = () => {
   const hash = window.location.hash;
-  if (!hash) return;
+  if (!hash) return false;
 
   const id = decodeURIComponent(hash.slice(1));
   const target = document.getElementById(id);
-  if (!target) return;
+  if (!target) return false;
 
   target.scrollIntoView({
     behavior: "smooth",
     block: "start",
   });
+
+  return true;
+};
+
+const restorePageState = async () => {
+  const scrollRoot = getScrollRoot();
+  if (!scrollRoot) return;
+
+  if (scrollToHash()) {
+    syncProgress(route.path);
+    return;
+  }
+
+  if (!isArticleLayout()) {
+    scrollRoot.scrollTo({ top: 0, behavior: "auto" });
+    syncProgress();
+    return;
+  }
+
+  const restored = await restoreScrollPosition(route.path);
+  if (!restored) {
+    scrollRoot.scrollTo({ top: 0, behavior: "auto" });
+  }
+  syncProgress(route.path);
 };
 
 const handleHashChange = () => {
-  nextTick(scrollToHash);
+  nextTick(async () => {
+    await restorePageState();
+  });
 };
 
-onMounted(() => {
-  handleHashChange();
+onMounted(async () => {
+  initTheme();
+  bindScrollRoot(getScrollRoot());
+  await restorePageState();
   window.addEventListener("hashchange", handleHashChange);
 });
 
 onBeforeUnmount(() => {
+  saveScrollPosition(route.path, getScrollTop());
+  unbindScrollRoot();
   window.removeEventListener("hashchange", handleHashChange);
 });
 
 watch(
   () => route.path,
-  () => {
-    handleHashChange();
+  async (nextPath, previousPath) => {
+    if (previousPath) {
+      saveScrollPosition(previousPath, getScrollTop());
+    }
+
+    await nextTick();
+    bindScrollRoot(getScrollRoot());
+    await restorePageState();
+
+    if (isArticleLayout()) {
+      syncProgress(nextPath);
+    }
   },
 );
 </script>
 
 <template>
   <DefaultTheme.Layout v-if="frontmatter.layout === 'doc'" />
-  <div
-    v-else
-    class="flex h-screen flex-col overflow-hidden bg-base font-sans text-main transition-colors duration-300 selection:bg-brand selection:text-white"
-  >
-    <SiteHeader />
-    <Breadcrumb />
-
-    <main
-      id="site-main-scroll"
-      class="custom-scrollbar w-full flex-1 overflow-y-auto pt-5"
+  <template v-else>
+    <BackgroundCover />
+    <ContextMenu />
+    <div
+      class="relative z-0 flex h-screen flex-col overflow-hidden bg-transparent font-sans"
     >
-      <HomeView v-if="frontmatter.layout === 'home'" />
-      <BlogIndexView v-else-if="frontmatter.layout === 'blog-index'" />
-      <ResourcesIndexView
-        v-else-if="frontmatter.layout === 'resources-index'"
-      />
-      <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
-      <BassTabLayout v-else-if="frontmatter.layout === 'basstab-detail'" />
-    </main>
-  </div>
+      <SiteHeader />
+
+      <main
+        id="site-main-scroll"
+        class="custom-scrollbar w-full flex-1 overflow-y-auto"
+      >
+        <div class="flex min-h-full flex-col">
+          <div class="relative flex-1 px-20 py-10">
+            <Transition name="page-fade" mode="out-in">
+              <div :key="route.path">
+                <HomeView v-if="frontmatter.layout === 'home'" />
+                <BlogIndexView
+                  v-else-if="frontmatter.layout === 'blog-index'"
+                />
+                <ResourcesIndexView
+                  v-else-if="frontmatter.layout === 'resources-index'"
+                />
+                <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
+                <BassTabLayout
+                  v-else-if="frontmatter.layout === 'basstab-detail'"
+                />
+              </div>
+            </Transition>
+            <ToolBar />
+          </div>
+          <Breadcrumb />
+          <SiteFooter id="site-footer" />
+        </div>
+      </main>
+    </div>
+  </template>
 </template>
 
 <style>
+.page-fade-enter-active,
+.page-fade-leave-active {
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s ease;
+}
+
+.page-fade-enter-from,
+.page-fade-leave-to {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
 /* 定义 custom-scrollbar 的样式 */
 
 /* 针对 Webkit 浏览器 (Chrome, Edge, Safari) */
@@ -103,6 +192,7 @@ watch(
 .custom-scrollbar {
   scrollbar-width: thin;
   scrollbar-color: rgba(156, 163, 175, 0.4) transparent;
+  scrollbar-gutter: stable;
 }
 
 /* 如果你的项目支持深色模式 (dark mode)，可以自动适配 */
@@ -116,3 +206,4 @@ watch(
   scrollbar-color: rgba(156, 163, 175, 0.2) transparent;
 }
 </style>
+

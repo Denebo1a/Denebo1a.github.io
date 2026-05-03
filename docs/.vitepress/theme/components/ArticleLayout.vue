@@ -1,3 +1,36 @@
+<template>
+  <div class="relative flex w-full flex-col items-start gap-4 lg:flex-row">
+    <article
+      class="flex w-full flex-col space-y-4 rounded-[1rem] border border-color bg-card p-8 shadow-card md:w-[80%]"
+    >
+      <header class="flex w-full flex-col">
+        <Header
+          :category="frontmatter.category"
+          :date="formattedDate"
+          :title="page.title"
+          :tags="frontmatter.tags"
+          :summary="frontmatter.summary"
+        />
+      </header>
+
+      <div class="vp-doc article-content transition-colors duration-300">
+        <Content />
+      </div>
+      <Tags :tags="frontmatter.tags" />
+    </article>
+
+    <aside class="sticky top-4 w-full space-y-4 md:w-[20%]">
+      <Toc
+        :headers="headers"
+        :active-hash="activeHash"
+        @tocClick="handleTocClick"
+      />
+      <ShareCard :xShareLink="xShareLink" @call-copy="handleCopy" />
+      <RelatedPost :related-posts="relatedPosts" />
+    </aside>
+  </div>
+</template>
+
 <script setup>
 import {
   computed,
@@ -11,8 +44,13 @@ import { useData, useRoute } from "vitepress";
 import { data as allPosts } from "../../../blog/posts.data";
 import { formatDate } from "../utils/format";
 import { ElMessage } from "element-plus";
+import ShareCard from "./article/aside/ShareCard.vue";
 
 import { copyTextToClipboard } from "../utils/copyText";
+import RelatedPost from "./article/aside/RelatedPost.vue";
+import Tags from "./article/Tags.vue";
+import Toc from "./article/aside/Toc.vue";
+import Header from "./article/Header.vue";
 
 const { page, frontmatter } = useData();
 const route = useRoute();
@@ -22,6 +60,10 @@ const xShareLink = ref("");
 const activeHash = ref("");
 const lockedHash = ref("");
 const isHashNavigating = ref(false);
+
+const formattedDate = computed(() => {
+  return formatDate(frontmatter.value.date).string;
+});
 
 let headingObserver = null;
 
@@ -211,155 +253,3 @@ watch(
   },
 );
 </script>
-
-<template>
-  <div
-    class="relative flex w-full flex-col items-start gap-6 px-6 py-4 lg:flex-row"
-  >
-    <article
-      class="w-full rounded-[2.5rem] bg-card p-8 shadow-card transition-colors duration-300 md:p-14 lg:w-[80%]"
-    >
-      <header class="mx-auto mb-12 max-w-3xl text-center">
-        <div class="mb-6 flex items-center justify-center gap-3">
-          <span
-            class="rounded-full bg-brand-light px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand transition-colors"
-          >
-            {{ frontmatter.category }}
-          </span>
-          <span class="text-sm font-medium text-muted transition-colors">{{
-            formatDate(frontmatter.date).string
-          }}</span>
-        </div>
-
-        <h1
-          class="mb-4 text-[1.5rem] font-bold leading-[1.2] tracking-tight text-main transition-colors md:text-[2rem]"
-        >
-          {{ page.title }}
-        </h1>
-
-        <p
-          v-if="frontmatter.summary"
-          class="text-[1rem] font-medium leading-relaxed text-muted transition-colors"
-        >
-          {{ frontmatter.summary }}
-        </p>
-      </header>
-
-      <div
-        v-if="frontmatter.cover"
-        class="mb-16 aspect-[16/9] w-full overflow-hidden rounded-3xl bg-alt shadow-inner transition-colors"
-      >
-        <img
-          :src="frontmatter.cover"
-          class="h-full w-full object-cover"
-          alt="Cover Image"
-        />
-      </div>
-
-      <div
-        class="vp-doc article-content mx-auto max-w-none transition-colors duration-300"
-      >
-        <Content />
-      </div>
-
-      <div
-        v-if="frontmatter.tags"
-        class="mt-16 flex flex-wrap gap-3 border-t border-color pt-8 transition-colors"
-      >
-        <span
-          class="mr-2 flex items-center text-sm font-bold text-main transition-colors"
-          >标签:</span
-        >
-        <span
-          v-for="tag in frontmatter.tags"
-          :key="tag"
-          class="cursor-pointer rounded-full bg-alt px-3 py-1.5 text-xs font-bold text-muted transition-colors hover:bg-brand-light hover:text-brand"
-        >
-          #{{ tag }}
-        </span>
-      </div>
-    </article>
-
-    <aside class="sticky top-0 w-full space-y-6 lg:w-[20%]">
-      <div
-        v-if="headers.length > 0"
-        class="rounded-[1.5rem] bg-card p-4 shadow-card transition-colors duration-300"
-      >
-        <div class="mb-2 flex items-center gap-2 border-b border-color pb-2">
-          <i-ph-list-dashes-bold class="h-4 w-4 text-brand" />
-          <h3 class="font-bold text-main transition-colors">文章目录</h3>
-        </div>
-        <nav class="flex flex-col gap-2">
-          <a
-            v-for="header in headers"
-            :key="header.link"
-            :href="header.link"
-            @click="handleTocClick(header.link)"
-            class="relative line-clamp-1 rounded-md px-1 py-0.5 text-sm font-medium transition-colors hover:bg-alt"
-            :class="[
-              header.level === 3 ? 'ml-4' : header.level === 4 ? 'ml-8' : '',
-              activeHash === header.link
-                ? 'bg-brand-light text-brand'
-                : 'text-muted',
-            ]"
-          >
-            {{ header.title }}
-          </a>
-        </nav>
-      </div>
-
-      <div
-        class="rounded-[1.5rem] bg-card p-4 shadow-card transition-colors duration-300"
-      >
-        <div class="mb-2 flex items-center gap-2 border-b border-color pb-2">
-          <i-ph-share-network-bold class="h-4 w-4 text-brand" />
-          <h3 class="font-bold text-main transition-colors">分享文章</h3>
-        </div>
-        <div class="flex gap-3">
-          <a
-            :href="xShareLink"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="flex flex-1 justify-center rounded-xl bg-alt py-2.5 text-muted transition-all hover:bg-brand-light hover:text-brand"
-          >
-            <i-ph-x-logo-bold class="h-5 w-5" />
-          </a>
-          <button
-            @click="handleCopy"
-            class="flex flex-1 justify-center rounded-xl bg-alt py-2.5 text-muted transition-all hover:bg-brand-light hover:text-brand"
-          >
-            <i-ph-link-bold class="h-5 w-5" />
-          </button>
-        </div>
-      </div>
-
-      <div
-        v-if="relatedPosts.length > 0"
-        class="rounded-[1.5rem] bg-card p-4 shadow-card transition-colors duration-300"
-      >
-        <h3
-          class="mb-3 flex items-center gap-2 border-b border-color pb-3 font-bold text-main transition-colors"
-        >
-          <i-ph-book-open-bold class="h-4 w-4 text-brand" /> 相关博客
-        </h3>
-        <div class="flex flex-col">
-          <a
-            v-for="post in relatedPosts"
-            :key="post.url"
-            :href="post.url"
-            class="group mb-3 flex flex-col gap-1 border-b border-color px-2 pb-3"
-          >
-            <h4
-              class="line-clamp-2 text-sm font-bold text-main transition-colors group-hover:text-brand"
-            >
-              {{ post.title }}
-            </h4>
-            <span class="text-xs font-medium text-muted transition-colors">{{
-              post.date.string
-            }}</span>
-          </a>
-        </div>
-      </div>
-    </aside>
-  </div>
-</template>

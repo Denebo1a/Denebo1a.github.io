@@ -13,7 +13,7 @@ export default defineConfig({
 
   // 显式要求 VitePress 提取 Markdown 标题供客户端使用
   markdown: {
-    theme: 'github-dark',
+    theme: 'github-light',
     languages: customLanguages,
     headers: {
       // 提取 h2 和 h3 标题

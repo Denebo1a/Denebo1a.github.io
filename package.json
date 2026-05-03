@@ -10,7 +10,7 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
+  "license": "MIT",
   "description": "",
   "devDependencies": {
     "@iconify-json/ant-design": "^1.2.5",
@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@coderline/alphatab": "^1.8.2",
-    "@coderline/alphatab-vite": "^1.8.2"
+    "@coderline/alphatab-vite": "^1.8.2",
+    "medium-zoom": "^1.1.0"
   }
 }
