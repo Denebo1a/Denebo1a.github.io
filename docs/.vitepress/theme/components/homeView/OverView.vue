@@ -1,6 +1,6 @@
 <template>
   <section
-    class="flex h-full flex-col rounded-[1rem] border border-color bg-card p-6 shadow-card transition-colors duration-300 md:p-8 lg:col-span-8"
+    class="flex h-full flex-col rounded-[1rem] border border-color bg-card p-4 shadow-card transition-colors duration-300 md:p-4 lg:col-span-8"
     @mouseenter="isHovered = true"
     @mouseleave="isHovered = false"
   >
@@ -9,7 +9,7 @@
         v-for="(tab, index) in tabs"
         :key="tab.id"
         @click="setTab(index)"
-        class="group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-[1rem] py-4 transition-all duration-300 sm:py-6"
+        class="group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-[1rem] py-4 transition-all duration-300 sm:py-4"
         :class="
           activeTabIndex === index
             ? 'border border-color bg-gradient-to-b from-[var(--color-brand-light)] to-[var(--color-bg-card)] text-brand shadow-card'
@@ -37,32 +37,18 @@
         </div>
       </button>
     </div>
-    <div
-      class="relative flex-1 overflow-hidden rounded-2xl border border-color bg-alt transition-colors"
-    >
+    <div class="relative flex-1 overflow-hidden transition-colors">
       <transition name="fade" mode="out-in">
-        <div
-          v-if="activeTabIndex === 0"
-          class="flex h-full flex-col p-6 sm:p-8"
-          key="blog"
-        >
-          <h3 class="mb-4 text-xl font-bold text-main">占位符</h3>
+        <div v-if="activeTabIndex === 0" class="h-full" key="blog">
+          <BlogOverview />
         </div>
 
-        <div
-          v-else-if="activeTabIndex === 1"
-          class="flex h-full flex-col p-6 sm:p-8"
-          key="resources"
-        >
-          <h3 class="mb-4 text-xl font-bold text-main">占位符</h3>
+        <div v-else-if="activeTabIndex === 1" class="h-full" key="basstab">
+          <BasstabOverview />
         </div>
 
-        <div
-          v-else-if="activeTabIndex === 2"
-          class="flex h-full flex-col p-6 sm:p-8"
-          key="studio"
-        >
-          <h3 class="mb-4 text-xl font-bold text-main">占位符</h3>
+        <div v-else-if="activeTabIndex === 2" class="h-full" key="studio">
+          <StudioOverview />
         </div>
       </transition>
     </div>
@@ -72,8 +58,11 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from "vue";
 import blogBoldIcon from "~icons/ph/article-bold";
-import resourcesBoldIcon from "~icons/ph/package-bold";
+import basstabBoldIcon from "~icons/ph/music-notes-bold";
 import studioBoldIcon from "~icons/ph/atom-bold";
+import BlogOverview from "./overview/BlogOverview.vue";
+import BasstabOverview from "./overview/BasstabOverview.vue";
+import StudioOverview from "./overview/StudioOverview.vue";
 
 // --- 走马灯与进度条逻辑 ---
 const duration = 5000; // 每个 Tab 停留 5 秒
@@ -87,7 +76,7 @@ const isHovered = ref(false);
 // --- 选项卡数据 ---
 const tabs = [
   { id: "blog", label: "博客", icon: blogBoldIcon },
-  { id: "resources", label: "资源", icon: resourcesBoldIcon },
+  { id: "basstab", label: "乐谱", icon: basstabBoldIcon },
   { id: "studio", label: "Studio", icon: studioBoldIcon },
 ];
 

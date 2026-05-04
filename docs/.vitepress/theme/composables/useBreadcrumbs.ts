@@ -93,8 +93,8 @@ export const useBreadcrumbs = () => {
       return '分享技术，记录生活~'
     } else if (section.value === 'blog' && route.path === '/blog/') {
       return '博客总览'
-    } else if (section.value === 'resources' && route.path === '/resources/') {
-      return '资源总览'
+    } else if (section.value === 'basstabs' && route.path === '/basstabs/') {
+      return '乐谱总览'
     } else if (section.value === 'studio' && route.path === '/studio/') {
       return '正在施工中......'
     }

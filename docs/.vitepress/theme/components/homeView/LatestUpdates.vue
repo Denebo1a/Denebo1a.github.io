@@ -1,12 +1,18 @@
 <template>
   <div
-    class="flex h-96 flex-col overflow-hidden rounded-[1.5rem] border border-color bg-card shadow-card"
+    class="flex h-96 flex-col overflow-hidden rounded-[1rem] border border-color bg-card shadow-card"
   >
-    <div class="flex shrink-0 items-center border-b border-color p-4 pb-2">
-      <div class="flex items-center gap-2">
-        <div
-          class="h-3 w-3 rounded-full bg-brand ring-2 ring-brand-light"
-        ></div>
+    <div class="flex shrink-0 items-center border-b border-color px-4 py-2">
+      <div class="flex items-center gap-3">
+        <div class="relative flex h-3 w-3">
+          <span
+            class="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand opacity-75"
+          ></span>
+
+          <span
+            class="relative inline-flex h-3 w-3 rounded-full bg-brand ring-2 ring-brand-light"
+          ></span>
+        </div>
         <h2 class="text-[1rem] font-bold text-main">最新动态</h2>
       </div>
     </div>
@@ -34,35 +40,23 @@
                 v-else-if="item.type === 'blog'"
                 class="h-3 w-3 text-brand"
               />
-              <i-ph-dots-three-outline-vertical-fill
-                v-else
-                class="h-3 w-3 text-brand"
-              />
             </div>
           </template>
 
           <div
-            class="group flex flex-col rounded-[1rem] border border-color px-2 py-2 shadow-card transition-colors hover:border-brand hover:bg-brand-light"
+            class="group flex flex-col rounded-full border border-color px-2 py-2 shadow-card transition-colors hover:border-brand hover:bg-brand-light"
           >
             <div
               class="flex cursor-pointer items-center justify-between"
               @click="router.go(item.url)"
             >
               <div class="flex items-center gap-2">
+                <Category :category="item.typeLabel" :tracking-widest="false" />
                 <span
-                  class="shrink-0 rounded-full bg-brand px-2 py-0.5 text-[12px] font-bold text-white"
-                  >{{ item.typeLabel }}</span
-                >
-                <span
-                  class="font group text-[15px] leading-relaxed text-muted transition-colors group-hover:text-brand"
+                  class="font group line-clamp-1 text-[0.8rem] font-bold leading-relaxed text-main transition-colors group-hover:text-brand"
                 >
                   {{ item.title }}
                 </span>
-              </div>
-              <div class="bg flex h-6 w-6 items-center">
-                <i-ph-arrow-square-out-bold
-                  class="h-4 w-4 text-muted group-hover:text-brand"
-                />
               </div>
             </div>
           </div>
@@ -74,4 +68,5 @@
 
 <script setup>
 import { latestUpdates } from "../../data/latestUpdates";
+import Category from "../items/Category.vue";
 </script>

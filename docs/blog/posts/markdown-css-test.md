@@ -1,6 +1,6 @@
 ---
 layout: article
-title: vitepress vp-doc markdown样式渲染测试
+title: VitePress vp-doc Markdown样式渲染测试
 date: 2026-04-30
 category: 测试
 tags: [Markdown, vitepress]

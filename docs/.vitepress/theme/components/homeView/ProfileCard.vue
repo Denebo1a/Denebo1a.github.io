@@ -5,13 +5,19 @@
       class="flex h-full flex-col p-4 md:p-6"
     >
       <div class="flex flex-col items-start">
-        <div class="relative mb-4 flex flex-row items-center gap-5 sm:gap-6">
-          <div class="relative shrink-0">
+        <div class="mb-4 flex flex-row items-center gap-5 sm:gap-6">
+          <div
+            class="group relative inline-flex shrink-0 cursor-pointer items-center justify-center overflow-hidden rounded-full bg-alt p-[4px] transition-all duration-300 hover:scale-105"
+          >
+            <span
+              class="absolute inset-[-1000%] animate-[spin_2s_linear_infinite] bg-[conic-gradient(from_90deg_at_50%_50%,transparent_0%,var(--color-brand)_30%,transparent_100%)] opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+            ></span>
+
             <img
               src="/avatar.png"
               @click="handleSecretClick"
               alt="Denebora"
-              class="h-20 w-20 rounded-full object-cover shadow-card ring-4 ring-alt transition-all hover:scale-105 sm:h-24 sm:w-24"
+              class="relative z-10 h-20 w-20 rounded-full bg-card object-cover shadow-card transition-all group-hover:shadow-none sm:h-24 sm:w-24"
             />
           </div>
 

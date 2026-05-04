@@ -40,16 +40,18 @@ Blog-CC/
 │   │   ├── index.md              # 博客列表页，frontmatter: layout: blog-index
 │   │   ├── posts.data.ts         # 博文数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
 │   │   └── posts/                # 博客文章（.md，含 frontmatter）
-│   ├── resources/
-│   │   ├── index.md              # 资源页，frontmatter: layout: resources-index
-│   │   ├── basstabs/
-│   │   │   ├── basstabs.data.ts  # BASS TAB 数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
-│   │   │   └── posts/            # BASS TAB 条目（.md，含 frontmatter.date）
-│   │   └── others/
-│   │       ├── others.data.ts    # 其他资源数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
-│   │       └── posts/            # 其他资源条目（.md，含 frontmatter）
+│   ├── basstabs/
+│   │   ├── index.md              # BASS TAB 列表页，frontmatter: layout: basstabs-index
+│   │   ├── basstabs.data.ts      # BASS TAB 数据层：glob 扫描 posts/*.md，提取 frontmatter 并格式化日期
+│   │   └── posts/                # BASS TAB 条目（.md，含 frontmatter.date / artist / genre / links）
+│   ├── studio/
+│   │   └── index.md              # Studio 页，frontmatter: layout: studio-view
 │   ├── public/                   # 静态资源（avatar.png 等）
 │   │   ├── alphatab/             # alphaTab 运行时静态镜像（mjs/core/worker/worklet）
+│   │   ├── basstabs/
+│   │   │   ├── covers/           # BASS TAB 卡片封面
+│   │   │   ├── gpx/              # GPX / 曲谱资源
+│   │   │   └── artists/          # 艺术家头像（推荐 .webp，按 artist slug 命名）
 │   │   ├── font/                 # alphaTab 字体资源（Bravura.*）
 │   │   └── soundfont/            # alphaTab 音源资源（sonivox.sf2 / sonivox.sf3）
 │   └── .vitepress/
@@ -60,22 +62,36 @@ Blog-CC/
 │       │   └── NOTICE.zeek-license.txt # 上游 grammar 来源与许可说明
 │       └── theme/
 │           ├── index.ts          # 主题入口（继承 VitePress DefaultTheme、注册 Layout、全局 CSS、Element Plus）
-│           ├── Layout.vue        # 路由分发器（按 frontmatter.layout 切换视图）
+│           ├── Layout.vue        # 路由分发器（按 frontmatter.layout 切换视图，并挂载页面级 overlays）
 │           ├── style.css         # 全局样式（Tailwind、CSS 变量主题系统、Element Plus 接管、围栏代码块固定主题）
 │           ├── data/
-│           │   └── latestUpdates.ts # 首页最新动态聚合层（混合博文/BASS TAB/其他资源，过滤最近 30 天）
+│           │   └── latestUpdates.ts # 首页最新动态聚合层（当前混合博文/BASS TAB，过滤最近 30 天）
+│           ├── composables/
+│           │   ├── useTheme.ts
+│           │   ├── useScrollPersistence.ts
+│           │   └── useBassTabsIndex.ts # basstabs-index 页面共享状态与统一数据接口
 │           ├── components/
-│           │   ├── HomeView.vue          # 首页（个人信息卡 + 最新动态时间轴 + 自动轮播 Tab）
-│           │   ├── BlogIndexView.vue     # 博客列表（搜索/筛选/排序/布局切换）
-│           │   ├── ArticleLayout.vue     # 文章详情（TOC 侧边栏、分享、相关文章）
-│           │   ├── SiteHeader.vue        # 顶部导航（路由激活状态、ThemeSwitcher）
-│           │   ├── Breadcrumb.vue        # 面包屑（sticky，仅博客路由有多级）
-│           │   ├── ResourcesIndexView.vue # 资源页（Bass Tabs，3D 卡片悬浮动画）
-│           │   ├── SheetPlayer.vue       # alphaTab 乐谱播放器（客户端动态加载 + worker 播放）
-│           │   ├── ThemeSwitcher.vue     # 主题切换器（4 套主题，localStorage 持久化）
+│           │   ├── HomeView.vue
+│           │   ├── BlogIndexView.vue
+│           │   ├── BassTabsIndex.vue    # BASS TAB 列表容器（消费共享状态并渲染卡片网格）
+│           │   ├── BassTabLayout.vue    # BASS TAB 详情页
+│           │   ├── ArticleLayout.vue
+│           │   ├── StudioView.vue
+│           │   ├── SiteHeader.vue
+│           │   ├── SiteFooter.vue
+│           │   ├── SheetPlayer.vue
+│           │   ├── basstabsIndex/
+│           │   │   ├── BottomBar.vue                # basstabs-index 底部悬浮筛选条
+│           │   │   ├── SideBar.vue                  # basstabs-index 左侧艺术家悬浮栏
+│           │   │   ├── BasstabCard.vue             # BASS TAB 卡片组件
+│           │   │   ├── OverflowMenu.vue            # 卡片溢出菜单（统一外链接口）
+│           │   │   ├── bottomBar/
+│           │   │   │   ├── GenreFilter.vue         # 流派筛选器
+│           │   │   │   └── SearchBox.vue           # 搜索框 + 已选 artist chip
+│           │   │   └── sideBar/
+│           │   │       └── Artist.vue              # 艺术家按钮/头像（artist → slug → .webp 路径推导）
 │           │   └── styles/
-│           │       └── GlowCardBg.vue    # 环境光晕卡片容器（用于 HomeView）
-│           ├── composables/      # 空目录，暂无内容
+│           │       └── GlowCardBg.vue
 │           └── utils/
 │               ├── format.ts     # formatDate(raw) → { time, string }（中文格式）
 │               └── copyText.ts   # 复制到剪贴板（Clipboard API + execCommand fallback）
@@ -101,11 +117,14 @@ theme/index.ts
   ├── 引入 style.css（Tailwind + CSS 变量 + Element Plus 样式接管）
   └── SSR 安全地异步加载 Element Plus（仅客户端）
 
-Layout.vue（路由分发器）
+Layout.vue（路由分发器 + 页面级 overlay 挂载点）
   ├── frontmatter.layout === 'home'             → HomeView.vue
   ├── frontmatter.layout === 'blog-index'       → BlogIndexView.vue
-  ├── frontmatter.layout === 'resources-index'  → ResourcesIndexView.vue
+  ├── frontmatter.layout === 'basstabs-index'   → BassTabsIndex.vue
   ├── frontmatter.layout === 'article'          → ArticleLayout.vue
+  ├── frontmatter.layout === 'basstab-detail'   → BassTabLayout.vue
+  ├── frontmatter.layout === 'studio-view'      → StudioView.vue
+  ├── frontmatter.layout === 'basstabs-index' 时额外挂载 → SideBar.vue / BottomBar.vue
   └── 默认                                       → <Content />（VitePress 原生渲染）
 
 posts.data.ts（博文数据层）
@@ -113,28 +132,53 @@ posts.data.ts（博文数据层）
       ↑ 被 BlogIndexView.vue、ArticleLayout.vue、latestUpdates.ts 共同消费
 
 basstabs.data.ts（BASS TAB 数据层）
-  └── createContentLoader('resources/basstabs/posts/*.md') → 提取 { title, url, date, artist, genre, cover, ...links }
-      ↑ date 必填，用于首页最新动态时间轴的排序与过滤
-      ↑ 被 BassTabsView.vue 和 latestUpdates.ts 共同消费
+  └── createContentLoader('basstabs/posts/*.md') → 提取 { title, url, date, artist, genre, cover, musicxmlUrl, bilibiliUrl, baiduDiskUrl, lanzouUrl }
+      ↑ date 必填，用于首页最新动态排序与过滤
+      ↑ 被 useBassTabsIndex.ts、BassTabLayout.vue、latestUpdates.ts 共同消费
 
-others.data.ts（其他资源数据层）
-  └── createContentLoader('resources/others/posts/*.md') → 提取 { title, url, date, category, tags, summary, cover }
-      ↑ 被 OtherResourcesView.vue 和 latestUpdates.ts 共同消费
+useBassTabsIndex.ts（basstabs-index 页面共享状态层）
+  ├── 模块级共享状态：searchQuery / selectedGenre / selectedArtist
+  ├── 统一导出 genres / artists / filteredTabs
+  ├── 提供 buildTabLinks(tab) 统一生成卡片/菜单外链数据
+  └── 提供 toggleArtist / clearArtist / resetBassTabsIndexState 等页面行为
+
+BassTabsIndex.vue（BASS TAB 列表容器）
+  ├── 消费 useBassTabsIndex.ts 的 filteredTabs
+  ├── 渲染 Empty / BasstabCard 网格
+  └── 页面卸载时调用 resetBassTabsIndexState()，避免跨页面残留筛选状态
+
+basstabsIndex/BottomBar.vue（底部悬浮筛选条）
+  ├── 负责 fixed 定位与 footer 避让
+  └── 组合 GenreFilter.vue + SearchBox.vue
+
+basstabsIndex/SideBar.vue（左侧艺术家悬浮栏）
+  ├── 消费 useBassTabsIndex.ts 的 artists
+  └── 渲染 Artist.vue 列表作为 artist 入口
+
+basstabsIndex/BasstabCard.vue
+  ├── 接收统一的 tab 数据接口
+  ├── 渲染封面 / 标题 / artist / genre
+  └── 内部挂载 OverflowMenu.vue
+
+basstabsIndex/OverflowMenu.vue
+  └── 通过 useBassTabsIndex.ts 的 buildTabLinks(tab) 生成菜单项，统一处理 bilibili / 百度网盘 / 蓝奏云链接
+
+basstabsIndex/sideBar/Artist.vue
+  ├── 接收 artist 字符串
+  ├── 根据 artist 名推导 slug
+  ├── 头像路径固定为 /basstabs/artists/<slug>.webp
+  └── 图片加载失败时回退为首字母按钮
 
 latestUpdates.ts（首页聚合层）
-  └── 合并 posts.data.ts / basstabs.data.ts / others.data.ts
+  └── 当前合并 posts.data.ts / basstabs.data.ts
   └── 统一映射为 { type, typeLabel, title, url, date, cover, summary? }
   └── 过滤最近 30 天内容并按 date.time 倒序输出
 
 HomeView.vue
   ├── 消费 latestUpdates.ts
   ├── 使用 Element Plus：el-timeline / el-timeline-item
-  └── 左侧栏展示混合时间轴（博文 / BASS TAB / 其他资源）
+  └── 左侧栏展示混合时间轴（博文 / BASS TAB）
 ```
-
----
-
-## 主题系统说明
 
 主题切换通过 `<html data-theme="xxx">` 属性驱动，**不使用** Tailwind 的 `dark:` 前缀。
 
@@ -241,7 +285,7 @@ cover: /resources/basstabs/covers/example.png
 ## 已知问题与优化建议
 
 ### 1. Breadcrumb.vue — 重复的死代码分支
-`Breadcrumb.vue:24` 的 `else if (route.path.startsWith("/blog/"))` 条件与上一个 `if` 完全相同，永远不会执行。此外，`/resources/` 等路由没有面包屑支持，需要补全。
+`Breadcrumb.vue:24` 的 `else if (route.path.startsWith("/blog/"))` 条件与上一个 `if` 完全相同，永远不会执行。此外，`/basstabs/`、`/studio/` 等路由的面包屑能力仍需继续完善。
 
 ### 2. Element Plus — 全量引入，无 Tree Shaking
 `theme/index.ts` 中使用 `import ElementPlus from 'element-plus'` 全量加载，会显著增大客户端 bundle。应改用按需导入（配合 `unplugin-vue-components` 的 `ElementPlusResolver`）。
@@ -249,11 +293,14 @@ cover: /resources/basstabs/covers/example.png
 ### 3. hugeicons 图标包未使用
 `@iconify-json/hugeicons` 已安装但在代码中搜索不到任何使用，可直接移除以减小 `node_modules` 体积。
 
-### 4. composables/ 目录为空
-`docs/.vitepress/theme/composables/` 是空目录，可删除，或在添加实际 composable 时再创建。
+### 4. basstabs 艺术家头像依赖命名约定
+`basstabsIndex/sideBar/Artist.vue` 当前通过 `artist → slug → /basstabs/artists/<slug>.webp` 推导头像路径。若 artist 名与文件名无法稳定映射，后续应考虑增加显式映射表或为 artist 提供结构化元数据。
 
 ### 5. Google Fonts CDN
 `style.css` 从 `fonts.googleapis.com` 加载字体，在中国大陆访问速度慢。可考虑将字体文件本地化到 `docs/public/fonts/` 并用 `@font-face` 引入。
 
 ### 6. 封面图默认值引用不存在的文件
 `config.mts` 中 fallback 封面图路径为 `/default-cover.jpg`，但 `docs/public/` 中无此文件，会导致社交分享预览图 404。
+
+### 7. latestUpdates.ts 当前只聚合 blog + basstabs
+首页最新动态聚合层现在只合并 `posts.data.ts` 和 `basstabs.data.ts`。如果后续恢复更多内容分区，需要同步扩展 `latestUpdates.ts` 的数据源与 `LatestUpdateItem.type`。
