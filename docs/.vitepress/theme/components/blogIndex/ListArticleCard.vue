@@ -32,7 +32,7 @@
           <Tag
             v-for="tag in post.tags.slice(0, 5)"
             :key="tag"
-            @click="handleTagClick(tag)"
+            @click.stop="handleTagClick(tag)"
             :tag="tag"
           />
           <i-ph-dots-three-outline-fill

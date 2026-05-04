@@ -3,14 +3,14 @@
     <template #header>
       <div class="flex items-center">
         <button
-          @click="handleReset"
+          @click="resetBlogIndexState"
           class="text-bold flex items-center justify-center gap-1 rounded-l-xl border border-color px-2 py-0.5 text-[0.875rem] text-muted transition-colors duration-300 ease-in-out hover:border-brand hover:bg-brand-light hover:text-brand"
         >
           <i-material-symbols-prompt-suggestion-rounded class="h-4 w-4" />
           <span>还原</span>
         </button>
         <button
-          @click="handleSubmit"
+          @click="applySearchQuery"
           class="text-bold flex items-center justify-center gap-1 rounded-r-xl border border-color px-2 py-0.5 text-[0.875rem] text-muted transition-colors duration-300 ease-in-out hover:border-brand hover:bg-brand-light hover:text-brand"
         >
           <i-material-symbols-feature-search class="h-4 w-4" />
@@ -30,11 +30,12 @@
         class="!w-full"
       />
       <el-input
-        v-model="searchQueryModel"
+        v-model="searchQueryInput"
         type="text"
         placeholder="搜索标题、概要..."
         class="w-full"
         :prefix-icon="IconTitle"
+        @keyup.enter="applySearchQuery"
       />
       <el-select
         tag-type="primary"
@@ -49,23 +50,18 @@
       >
         <template #prefix>
           <i-material-symbols-bookmarks-rounded
-            class="h-[0.9rem] w-[0.9rem] text-main opacity-60"
+            class="h-[0.9rem] w-[0.9rem] text-muted"
           />
         </template>
-        <el-option
-          v-for="tag in allTags"
-          :key="tag"
-          :value="tag"
-          :label="tag"
-        />
+        <el-option v-for="tag in tags" :key="tag" :value="tag" :label="tag" />
       </el-select>
-      <AllTags :allTags="allTags" v-model="tagQueryModel" />
+      <AllTags />
     </div>
   </AsideCard>
 </template>
 
 <script setup>
-import { h } from "vue";
+import { computed } from "vue";
 import AsideCard from "../../container/AsideCard.vue";
 
 import IconSearchBold from "~icons/ph/magnifying-glass-bold";
@@ -73,25 +69,26 @@ import IconCalendarBlank from "~icons/ph/calendar-blank-fill";
 import IconTitle from "~icons/material-symbols/title";
 
 import AllTags from "./AllTags.vue";
+import { useBlogIndex } from "../../../composables/useBlogIndex";
 
-const dateRangeModel = defineModel("dateRangeModel", Array);
-const searchQueryModel = defineModel("searchQueryModel", String);
-const tagQueryModel = defineModel("tagQueryModel", Array);
+const {
+  tags,
+  searchQueryInput,
+  applySearchQuery,
+  tagQuery,
+  dateRange,
+  setTagQuery,
+  setDateRange,
+  resetBlogIndexState,
+} = useBlogIndex();
 
-const emit = defineEmits(["reset", "submit"]);
-
-defineProps({
-  allTags: Array,
+const tagQueryModel = computed({
+  get: () => tagQuery.value,
+  set: (value) => setTagQuery(value ?? []),
 });
 
-const handleReset = () => {
-  emit("reset");
-};
-
-const handleSubmit = () => {
-  emit("submit");
-};
-
-// --- 自定义空图标 ---
-const customBlankIcon = h("div");
+const dateRangeModel = computed({
+  get: () => dateRange.value,
+  set: (value) => setDateRange(value ?? []),
+});
 </script>

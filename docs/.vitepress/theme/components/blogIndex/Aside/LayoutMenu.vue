@@ -5,11 +5,11 @@
         <button
           v-for="layout in layoutTypes"
           :key="layout.type"
-          @click="changeLayout(layout.type)"
+          @click="setSelectedLayout(layout.type)"
           class="flex h-8 w-8 items-center justify-center rounded-xl transition-colors duration-300"
           :class="{
-            'bg-brand-light text-brand': props.layout === layout.type,
-            'bg-card text-muted hover:bg-alt': props.layout !== layout.type,
+            'bg-brand-light text-brand': selectedLayout === layout.type,
+            'bg-card text-muted hover:bg-alt': selectedLayout !== layout.type,
           }"
         >
           <component :is="layout.icon" class="h-5 w-5" />
@@ -17,7 +17,7 @@
       </div>
 
       <div class="flex shrink-0 items-center">
-        <el-select v-model="sort" class="!w-40">
+        <el-select v-model="selectedSortModel" class="!w-40">
           <template #label="{ label, value }">
             <div class="flex items-center gap-1">
               <component
@@ -45,6 +45,7 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import AsideCard from "../../container/AsideCard.vue";
 
 import columnIcon from "~icons/material-symbols/view-apps-rounded";
@@ -52,19 +53,16 @@ import rowIcon from "~icons/material-symbols/table-rows-rounded";
 import dateAscIcon from "~icons/ph/sort-ascending-bold";
 import dateDescIcon from "~icons/ph/sort-descending-bold";
 import IconLayoutBold from "~icons/ph/layout-bold";
+import { useBlogIndex } from "../../../composables/useBlogIndex";
 
-const props = defineProps({
-  layout: String,
+const { selectedLayout, selectedSort, setSelectedLayout, setSelectedSort } =
+  useBlogIndex();
+
+const selectedSortModel = computed({
+  get: () => selectedSort.value,
+  set: (value) => setSelectedSort(value),
 });
-const emit = defineEmits(["update:layout"]);
 
-const sort = defineModel("sort");
-
-const changeLayout = (newLayout) => {
-  emit("update:layout", newLayout);
-};
-
-// --- 布局类型 ---
 const layoutTypes = [
   {
     type: "grid",
@@ -76,7 +74,6 @@ const layoutTypes = [
   },
 ];
 
-// --- 按日期排序 ---
 const sortOptions = [
   {
     label: "按日期降序",
@@ -90,3 +87,4 @@ const sortOptions = [
   },
 ];
 </script>
+

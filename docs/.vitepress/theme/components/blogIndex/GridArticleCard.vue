@@ -27,7 +27,7 @@
           <Tag
             v-for="tag in post.tags.slice(0, 2)"
             :key="tag"
-            @click="handleTagClick(tag)"
+            @click.stop="handleTagClick(tag)"
             class="flex cursor-pointer items-center gap-1 rounded-full border border-color bg-card px-2 py-1 text-[0.7rem] font-bold text-muted hover:border-brand hover:bg-brand-light hover:text-brand"
             :tag="tag"
           />
