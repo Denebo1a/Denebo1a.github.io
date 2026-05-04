@@ -1,5 +1,6 @@
 <template>
   <div
+    :key="route.path"
     class="fixed left-6 top-1/2 z-40 flex max-h-[calc(100vh-5rem)] -translate-y-1/2 flex-col items-center gap-2 overflow-y-auto rounded-[1rem] border border-color bg-card p-2 shadow-card"
   >
     <i-material-symbols-artist class="h-5 w-5 text-brand" />
@@ -15,6 +16,10 @@
 import Artist from "./sideBar/Artist.vue";
 import { useBassTabsIndex } from "../../composables/useBassTabsIndex";
 import Divider from "../items/Divider.vue";
+
+import { useRoute } from "vitepress";
+
+const route = useRoute();
 
 const { artists } = useBassTabsIndex();
 </script>

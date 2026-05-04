@@ -1,7 +1,11 @@
 <template>
   <div
-    class="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 transition-[bottom] duration-200"
-    :style="{ bottom: `${bottomOffset}px` }"
+    :key="route.path"
+    class="fixed bottom-4 left-1/2 z-40 -translate-x-1/2 duration-200"
+    :style="{
+      bottom: `${bottomOffset}px`,
+      transitionProperty: 'bottom, opacity',
+    }"
   >
     <div class="flex items-center gap-4">
       <GenreFilter />

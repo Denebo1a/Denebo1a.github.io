@@ -79,13 +79,15 @@ import upIcon from "~icons/material-symbols/arrow-upward-rounded";
 import shuffleIcon from "~icons/ph/dice-three-fill";
 import copyIcon from "~icons/material-symbols/content-copy-outline-rounded";
 import shareIcon from "~icons/material-symbols/share-outline";
-import linkIcon from "~icons/ph/link";
+import linkIcon from "~icons/ph/link-bold";
 import imageIcon from "~icons/ph/image-square";
 import moonIcon from "~icons/ph/palette-bold";
 import closeIcon from "~icons/material-symbols/cancel";
-import openIcon from "~icons/ph/arrow-square-out";
+import openIcon from "~icons/ph/arrow-square-out-bold";
 import downloadIcon from "~icons/ph/download-simple";
-import searchIcon from "~icons/ph/magnifying-glass";
+import BaiduIcon from "~icons/ant-design/baidu-outlined";
+import BingIcon from "../svg/BingIcon.vue";
+import GoogleIcon from "../svg/GoogleIcon.vue";
 import pasteIcon from "~icons/ph/clipboard-text";
 import selectAllIcon from "~icons/ph/text-aa";
 
@@ -110,6 +112,7 @@ const { cycleTheme, initTheme } = useTheme();
 const { scrollToTop } = useScrollPersistence();
 const searchEngines = {
   bing: "https://cn.bing.com/search?q=",
+  google: "https://www.google.com/search?q=",
   baidu: "https://www.baidu.com/s?wd=",
 };
 
@@ -322,6 +325,7 @@ const menuHandlers = {
   copyImage: () => copyLinkUrl(context.imageSrc),
   downloadImage: () => downloadImage(),
   copySelection: () => copyTextToClipboard(context.selectedText),
+  searchGoogle: () => searchSelectedText("google"),
   searchBing: () => searchSelectedText("bing"),
   searchBaidu: () => searchSelectedText("baidu"),
   editableCopy: () => copyEditableSelection(),
@@ -391,8 +395,9 @@ const groupDefinitions = computed(() => {
       key: "selection",
       items: [
         { label: "复制选中文本", icon: copyIcon, action: "copySelection" },
-        { label: "使用 Bing 搜索", icon: searchIcon, action: "searchBing" },
-        { label: "使用百度搜索", icon: searchIcon, action: "searchBaidu" },
+        { label: "使用 Google 搜索", icon: GoogleIcon, action: "searchGoogle" },
+        { label: "使用 Bing 搜索", icon: BingIcon, action: "searchBing" },
+        { label: "使用 百度 搜索", icon: BaiduIcon, action: "searchBaidu" },
       ],
     });
   }

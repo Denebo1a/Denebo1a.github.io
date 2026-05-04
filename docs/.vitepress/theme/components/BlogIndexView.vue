@@ -4,28 +4,31 @@
       <div class="min-h-[160vh] lg:col-span-9">
         <Transition name="posts-fade" mode="out-in">
           <div :key="postsViewKey">
-            <div
-              v-if="selectedLayout === 'grid'"
-              class="grid auto-rows-fr grid-cols-1 gap-6 md:grid-cols-3"
-            >
+            <Empty v-if="filteredPosts.length === 0" />
+            <div v-else>
               <div
-                v-for="post in filteredPosts"
-                :key="post.url"
-                class="h-full min-w-0"
+                v-if="selectedLayout === 'grid'"
+                class="grid auto-rows-fr grid-cols-1 gap-6 md:grid-cols-3"
               >
-                <GridArticleCard :post="post" @tagClick="handleTagClick" />
+                <div
+                  v-for="post in filteredPosts"
+                  :key="post.url"
+                  class="h-full min-w-0"
+                >
+                  <GridArticleCard :post="post" @tagClick="handleTagClick" />
+                </div>
               </div>
-            </div>
-            <div
-              v-else-if="selectedLayout === 'list'"
-              class="flex flex-col gap-4"
-            >
               <div
-                v-for="post in filteredPosts"
-                :key="post.url"
-                class="min-w-0"
+                v-else-if="selectedLayout === 'list'"
+                class="flex flex-col gap-4"
               >
-                <ListArticleCard :post="post" @tagClick="handleTagClick" />
+                <div
+                  v-for="post in filteredPosts"
+                  :key="post.url"
+                  class="min-w-0"
+                >
+                  <ListArticleCard :post="post" @tagClick="handleTagClick" />
+                </div>
               </div>
             </div>
           </div>
@@ -64,6 +67,8 @@ import ListArticleCard from "./blogIndex/ListArticleCard.vue";
 import LayoutMenu from "./blogIndex/Aside/LayoutMenu.vue";
 import Filter from "./blogIndex/Aside/Filter.vue";
 import CategoryNav from "./blogIndex/Aside/CategoryNav.vue";
+import { EVENT_CODE } from "element-plus";
+import Empty from "./items/Empty.vue";
 
 const searchQueryInput = ref("");
 const searchQuery = ref("");

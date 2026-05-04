@@ -143,8 +143,12 @@ watch(
                 <StudioView v-else-if="frontmatter.layout === 'studio-view'" />
               </div>
             </Transition>
-            <SideBar v-if="frontmatter.layout === 'basstabs-index'" />
-            <BottomBar v-if="frontmatter.layout === 'basstabs-index'" />
+            <Transition name="fade">
+              <SideBar v-if="frontmatter.layout === 'basstabs-index'" />
+            </Transition>
+            <Transition name="fade">
+              <BottomBar v-if="frontmatter.layout === 'basstabs-index'" />
+            </Transition>
             <ToolBar />
           </div>
           <Breadcrumb />
@@ -167,6 +171,16 @@ watch(
 .page-fade-leave-to {
   opacity: 0;
   transform: translateY(8px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.24s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 
 /* 定义 custom-scrollbar 的样式 */
