@@ -110,7 +110,7 @@ const handleSecretClick = () => {
     ElMessage.success("这是哪里来着...");
     clickCount.value = 0;
   } else {
-    clickTimer = setTimeOut(() => {
+    clickTimer = setTimeout(() => {
       clickCount.value = 0;
     }, 500);
   }

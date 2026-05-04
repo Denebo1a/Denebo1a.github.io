@@ -69,4 +69,8 @@
 <script setup>
 import { latestUpdates } from "../../data/latestUpdates";
 import Category from "../items/Category.vue";
+
+import { useRouter } from "vitepress";
+
+const router = useRouter();
 </script>
