@@ -1,14 +1,13 @@
 import { data as allPosts } from '../../../blog/posts.data'
-import { data as allBassTabs } from '../../../resources/basstabs/basstabs.data'
-import { data as allOtherResources } from '../../../resources/others/others.data'
+import { data as allBassTabs } from '../../../basstabs/basstabs.data'
 
 const RECENT_WINDOW_DAYS = 30
 const RECENT_WINDOW_MS = RECENT_WINDOW_DAYS * 24 * 60 * 60 * 1000
 const MAX_UPDATES = 8
 
 export type LatestUpdateItem = {
-  type: 'blog' | 'basstab' | 'other'
-  typeLabel: '博文' | 'BASS TAB' | '其他资源'
+  type: 'blog' | 'basstab'
+  typeLabel: '博文' | 'BASS TAB'
   title: string
   url: string
   date: {
@@ -40,22 +39,9 @@ const latestBassTabUpdates: LatestUpdateItem[] = allBassTabs.map((tab) => ({
   cover: tab.cover,
 }))
 
-const latestOtherResourceUpdates: LatestUpdateItem[] = allOtherResources.map(
-  (resource) => ({
-    type: 'other',
-    typeLabel: '其他资源',
-    title: resource.title,
-    url: resource.url,
-    date: resource.date,
-    cover: resource.cover,
-    summary: resource.summary,
-  }),
-)
-
 export const latestUpdates = [
   ...latestBlogUpdates,
   ...latestBassTabUpdates,
-  ...latestOtherResourceUpdates,
 ]
   .filter((item) => item.date.time >= cutoffTime)
   .sort((a, b) => b.date.time - a.date.time)

@@ -1,7 +1,8 @@
 import { ref } from 'vue'
 import oceanIcon from '~icons/ph/drop-half-bottom-bold'
 import forestIcon from '~icons/ph/tree-evergreen-bold'
-import autumnIcon from '~icons/ph/leaf-bold'
+import irisIcon from '~icons/ph/bird-bold'
+import NoirIcon from '~icons/ph/paint-brush-bold'
 import darkIcon from '~icons/ph/moon-stars-bold'
 
 const STORAGE_KEY = 'blog-theme'
@@ -11,20 +12,26 @@ const themes = [
   {
     id: 'default',
     name: 'Ocean',
-    color: '#0284c7',
+    color: '#006fee',
     icon: oceanIcon,
   },
   {
     id: 'forest',
     name: 'Forest',
-    color: '#0f766e',
+    color: '#0a8f7a',
     icon: forestIcon,
   },
   {
-    id: 'autumn',
-    name: 'Autumn',
-    color: '#ea580c',
-    icon: autumnIcon,
+    id: 'iris',
+    name: 'Iris',
+    color: '#7047eb',
+    icon: irisIcon,
+  },
+  {
+    id: 'noir',
+    name: 'Noir',
+    color: '#18181B',
+    icon: NoirIcon,
   },
   {
     id: 'dark',
@@ -54,12 +61,21 @@ const normalizeTheme = (themeId?: string | null): ThemeId => {
 const applyThemeToDocument = (themeId: ThemeId) => {
   if (!isClient()) return
 
+  const root = document.documentElement
+
   if (themeId === DEFAULT_THEME) {
-    document.documentElement.removeAttribute('data-theme')
+    root.removeAttribute('data-theme')
+    root.classList.remove('dark')
     return
   }
 
-  document.documentElement.setAttribute('data-theme', themeId)
+  root.setAttribute('data-theme', themeId)
+
+  if (themeId === 'dark') {
+    root.classList.add('dark')
+  } else {
+    root.classList.remove('dark')
+  }
 }
 
 const persistTheme = (themeId: ThemeId) => {

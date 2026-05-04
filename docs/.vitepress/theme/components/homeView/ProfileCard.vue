@@ -63,10 +63,6 @@
         <h2 class="text-lg font-bold text-muted transition-colors">
           Developer / Music Enthusiast
         </h2>
-
-        <p class="mt-2 leading-relaxed text-muted transition-colors">
-          欢迎来到Denebora的数字花园(๑╹◡╹๑)
-        </p>
       </div>
     </GlowCard>
   </div>

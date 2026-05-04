@@ -3,9 +3,9 @@ layout: article
 title: vitepress vp-doc markdown样式渲染测试
 date: 2026-04-30
 category: 测试
-tags: [markdown, vitepress]
+tags: [Markdown, vitepress]
 summary: 本文档旨在全面测试 `vp-doc` 样式环境下的元素渲染效果，涵盖了标准 Markdown 语法、排版元素以及 VitePress 提供的高级扩展功能。
-cover: /blog/covers/default-empty-cover.png
+cover: /blog/covers/default.png
 ---
 
 以下为测试示例内容。

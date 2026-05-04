@@ -4,7 +4,7 @@ title: 猴子也可以看懂的个人博客网站搭建教程！
 date: 2026-04-02
 category: 开发日志
 tags: [Vibe coding, Vue3, VitePress, Stitch]
-cover: /blog/covers/blog-setup-guide.jpg
+cover: /blog/covers/default.png
 summary: 基于VitePress的个人博客网站搭建教程！
 ---
 

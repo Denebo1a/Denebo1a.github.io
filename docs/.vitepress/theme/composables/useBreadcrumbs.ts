@@ -1,7 +1,7 @@
 import { computed } from 'vue'
 import { useData, useRoute } from 'vitepress'
 
-type Section = 'home' | 'blog' | 'resources' | 'studio' | 'unknown'
+type Section = 'home' | 'blog' | 'basstabs' | 'studio' | 'unknown'
 
 type BreadcrumbItem = {
   name: string
@@ -38,8 +38,8 @@ export const useBreadcrumbs = () => {
       return 'blog'
     }
 
-    if (route.path.startsWith('/resources/')) {
-      return 'resources'
+    if (route.path.startsWith('/basstabs/')) {
+      return 'basstabs'
     }
 
     if (route.path.startsWith('/studio/')) {
@@ -71,11 +71,11 @@ export const useBreadcrumbs = () => {
         items.push(createCrumb(frontmatter.value.category))
         items.push(createCrumb(terminalTitle.value))
       }
-    } else if (section.value === 'resources') {
-      items.push(createCrumb('资源', '/resources/'))
+    } else if (section.value === 'basstabs') {
+      items.push(createCrumb('乐谱', '/basstabs/'))
 
       if (
-        route.path !== '/resources/' &&
+        route.path !== '/basstabs/' &&
         frontmatter.value.layout === 'basstab-detail'
       ) {
         items.push(createCrumb('BASS TAB'))
@@ -96,7 +96,7 @@ export const useBreadcrumbs = () => {
     } else if (section.value === 'resources' && route.path === '/resources/') {
       return '资源总览'
     } else if (section.value === 'studio' && route.path === '/studio/') {
-      return 'Studio'
+      return '正在施工中......'
     }
     const lastCrumb = breadcrumbs.value[breadcrumbs.value.length - 1]
     return lastCrumb?.name ?? ''

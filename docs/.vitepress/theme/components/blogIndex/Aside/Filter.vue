@@ -26,15 +26,15 @@
         end-placeholder="结束日期"
         value-format="YYYY-MM-DD"
         :unlink-panels="true"
-        :prefix-icon="customBlankIcon"
+        :prefix-icon="IconCalendarBlank"
         class="!w-full"
       />
-
       <el-input
         v-model="searchQueryModel"
         type="text"
         placeholder="搜索标题、概要..."
         class="w-full"
+        :prefix-icon="IconTitle"
       />
       <el-select
         tag-type="primary"
@@ -47,6 +47,11 @@
         placeholder="搜索标签(至多5个)..."
         class="w-full"
       >
+        <template #prefix>
+          <i-material-symbols-bookmarks-rounded
+            class="h-[0.9rem] w-[0.9rem] text-main opacity-60"
+          />
+        </template>
         <el-option
           v-for="tag in allTags"
           :key="tag"
@@ -54,6 +59,7 @@
           :label="tag"
         />
       </el-select>
+      <AllTags :allTags="allTags" v-model="tagQueryModel" />
     </div>
   </AsideCard>
 </template>
@@ -61,7 +67,12 @@
 <script setup>
 import { h } from "vue";
 import AsideCard from "../../container/AsideCard.vue";
+
 import IconSearchBold from "~icons/ph/magnifying-glass-bold";
+import IconCalendarBlank from "~icons/ph/calendar-blank-fill";
+import IconTitle from "~icons/material-symbols/title";
+
+import AllTags from "./AllTags.vue";
 
 const dateRangeModel = defineModel("dateRangeModel", Array);
 const searchQueryModel = defineModel("searchQueryModel", String);

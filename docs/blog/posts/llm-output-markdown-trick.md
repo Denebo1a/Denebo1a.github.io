@@ -5,7 +5,7 @@ date: 2026-04-30
 category: 杂谈
 tags: [Markdown, 大模型]
 summary: 似乎是很典型的默认用户体验与边缘需求的冲突
-cover: /blog/covers/test01.png
+cover: /blog/covers/default.png
 ---
 
 ## 提出问题

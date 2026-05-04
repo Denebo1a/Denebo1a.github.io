@@ -7,8 +7,10 @@
     class="color-muted inline-block self-stretch align-middle"
     :class="[
       dashed
-        ? 'w-0 border-l border-dashed border-zinc-200'
-        : 'w-[1px] bg-gradient-to-b from-transparent via-zinc-300 to-transparent',
+        ? 'w-0 border-l border-dashed border-[var(--color-border)]'
+        : solid
+          ? 'w-[1px] bg-[var(--color-border)]'
+          : 'w-[1px] bg-gradient-to-b from-transparent via-[var(--color-border)] to-transparent',
       margin || 'mx-4 my-1', // 默认垂直边距
     ]"
   ></div>
@@ -27,17 +29,19 @@
       :class="[
         align === 'left' ? 'w-8' : 'flex-1',
         dashed
-          ? 'border-t border-dashed border-zinc-200 dark:border-zinc-700'
-          : 'h-[1px] bg-gradient-to-r from-transparent via-zinc-300 to-zinc-300 dark:via-zinc-600 dark:to-zinc-600',
-        // 如果没有内容，左侧渐变直接横跨，不需要在末尾保持实色
-        !$slots.default && !dashed ? '!to-transparent' : '',
+          ? 'border-t border-dashed border-[var(--color-border)]'
+          : solid
+            ? 'h-[1px] bg-[var(--color-border)]'
+            : 'h-[1px] bg-gradient-to-r from-transparent via-[var(--color-border)] to-[var(--color-border)]',
+        // 如果没有内容，左侧渐变直接横跨，不需要在末尾保持实色（仅对渐变样式生效）
+        !$slots.default && !dashed && !solid ? '!to-transparent' : '',
       ]"
     ></div>
 
     <!-- 中间内容 (插槽) -->
     <div
       v-if="$slots.default"
-      class="px-4 text-xs font-medium uppercase tracking-[0.2em] text-zinc-400 dark:text-zinc-500"
+      class="px-4 text-xs font-medium uppercase tracking-[0.2em] text-[var(--color-text-muted)]"
     >
       <slot></slot>
     </div>
@@ -49,8 +53,10 @@
       :class="[
         align === 'right' ? 'w-8' : 'flex-1',
         dashed
-          ? 'border-t border-dashed border-zinc-200 dark:border-zinc-700'
-          : 'h-[1px] bg-gradient-to-l from-transparent via-zinc-300 to-zinc-300 dark:via-zinc-600 dark:to-zinc-600',
+          ? 'border-t border-dashed border-[var(--color-border)]'
+          : solid
+            ? 'h-[1px] bg-[var(--color-border)]'
+            : 'h-[1px] bg-gradient-to-l from-transparent via-[var(--color-border)] to-[var(--color-border)]',
       ]"
     ></div>
   </div>
@@ -63,8 +69,13 @@ defineProps({
     type: Boolean,
     default: false,
   },
-  // 线条样式：虚线 (true) 或 渐变实线 (false)
+  // 线条样式：虚线
   dashed: {
+    type: Boolean,
+    default: false,
+  },
+  // 线条样式：实线（无渐变）
+  solid: {
     type: Boolean,
     default: false,
   },

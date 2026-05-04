@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="tags"
-    class="flex flex-wrap items-center gap-3 rounded-full border border-color bg-card px-3 py-2"
+    class="flex flex-wrap items-center gap-3 rounded-full border border-color bg-card px-3 py-2 transition-colors duration-300"
   >
     <div class="flex items-center gap-1 border-r text-sm font-bold text-main">
       <i-material-symbols-bookmarks-rounded class="text-brand" />

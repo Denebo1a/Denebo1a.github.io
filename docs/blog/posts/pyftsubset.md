@@ -5,7 +5,7 @@ date: 2026-04-04
 category: 开发日志
 tags: [前端, pyftsubset]
 summary: 字体加载速度太慢/打包体积太大，或许可以先手动裁一裁~
-cover: /blog/covers/test01.png
+cover: /blog/covers/default.png
 ---
 
 在前端完全使用系统字体栈固然总是性能空间最优的选择，但是在许多开发场景下我们的确会面临需要深度定制项目字体样式的需求。同时，为了避免字体加载的稳定性受CDN网络连通性的影响，还需要考虑将字体作为静态资源一起打包进项目中。

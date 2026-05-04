@@ -2,7 +2,7 @@
   <article
     :key="post.url"
     @click="handleArticleClick"
-    class="group flex cursor-pointer flex-col overflow-hidden rounded-[1rem] border border-color bg-card shadow-card transition-all duration-300 hover:border-brand md:h-48 md:flex-row"
+    class="group flex cursor-pointer flex-col overflow-hidden rounded-[1rem] border border-color bg-card shadow-card transition-colors duration-300 hover:border-brand md:h-48 md:flex-row"
   >
     <div
       class="aspect-video w-full shrink-0 overflow-hidden bg-alt md:aspect-auto md:w-72 lg:w-80"

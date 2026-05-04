@@ -5,7 +5,7 @@ date: 2026-04-04
 category: 开发日志
 tags: [前端]
 summary: 
-cover: /blog/covers/test01.png
+cover: /blog/covers/default.png
 ---
 
 ## 图片来源

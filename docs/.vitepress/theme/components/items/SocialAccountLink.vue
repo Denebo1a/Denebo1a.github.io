@@ -25,13 +25,15 @@ defineProps({
   border-radius: 1rem;
   text-decoration: none;
 
-  background-color: var(--color-bg-alt);
+  background-color: var(--color-bg-base);
   color: var(--color-text-muted);
 
   /* 核心：上方和左右边框较细，下方边框极粗，形成 3D 边缘厚度 */
   border: 1px solid var(--color-border);
   border-bottom-width: 3px;
-  border-bottom-color: #cbd5e1; /* 比正常的 border 稍微深一点点，增强厚度阴影 */
+  border-bottom-color: var(
+    --color-border
+  ); /* 比正常的 border 稍微深一点点，增强厚度阴影 */
 
   transition: all 0.15s ease-out;
 }

@@ -2,7 +2,7 @@
   <article
     @click="handleArticleClick"
     :key="post.url"
-    class="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[1rem] border border-color bg-card shadow-card transition-all duration-300 ease-in-out hover:border-brand"
+    class="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[1rem] border border-color bg-card shadow-card transition-colors duration-300 ease-in-out hover:border-brand"
   >
     <div class="aspect-[16/9] overflow-hidden bg-alt">
       <img :src="post.cover" class="h-full w-full object-cover" />

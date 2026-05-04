@@ -1,20 +1,16 @@
 <template>
   <div
-    class="relative flex w-full flex-col overflow-hidden rounded-[0.5rem] border border-color bg-alt p-4 transition-colors duration-300"
+    class="relative flex w-full flex-col overflow-hidden rounded-[0.5rem] border border-color bg-base p-4"
   >
     <div class="mb-3 flex items-center gap-2">
-      <span
-        class="rounded-full bg-brand px-3 py-1 text-sm font-bold tracking-wider text-brand-light transition-colors"
-      >
-        {{ category }}
-      </span>
+      <Category :category="category" class="text-medium px-3 py-1" />
       <h1
         class="text-[1.25rem] font-bold leading-[1.2] tracking-tight text-main transition-colors md:text-[1.75rem]"
       >
         {{ title }}
       </h1>
     </div>
-    <div class="mb-3 flex items-center gap-6 border-b-2 border-color pb-3">
+    <div class="flex items-center gap-6">
       <div class="flex items-center gap-2 text-sm font-medium text-muted">
         <i-ph-calendar-blank-fill />
         <span>{{ date }}</span>
@@ -30,15 +26,18 @@
         />
       </div>
     </div>
+    <Divider :solid="true" margin="my-2" />
     <span class="text-muted">{{ summary }}</span>
     <i-material-symbols-article-rounded
-      class="absolute -right-8 -top-8 h-36 w-36 rotate-[-15deg] text-muted opacity-10"
+      class="absolute -right-8 -top-10 h-36 w-36 rotate-[-15deg] text-muted opacity-[0.06]"
     />
   </div>
 </template>
 
 <script setup>
+import Category from "../items/Category.vue";
 import Tag from "../items/Tag.vue";
+import Divider from "../items/Divider.vue";
 
 defineProps({
   category: String,

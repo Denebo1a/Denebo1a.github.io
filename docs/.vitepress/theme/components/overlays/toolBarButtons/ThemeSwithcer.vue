@@ -33,15 +33,17 @@ const activeTheme = computed(
 
 <template>
   <div class="relative inline-block text-left" ref="dropdownRef">
-    <button
-      @click="isOpen = !isOpen"
-      type="button"
-      class="group relative h-[50px] w-[50px] overflow-hidden rounded-full border border-color bg-card p-2 text-main shadow-card transition-all duration-300 hover:border-brand hover:bg-brand-light"
-    >
-      <i-ph-palette-bold
-        class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-muted transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-brand"
-      />
-    </button>
+    <el-tooltip content="切换主题" placement="left-start" :show-arrow="false">
+      <button
+        @click="isOpen = !isOpen"
+        type="button"
+        class="group relative h-[50px] w-[50px] overflow-hidden rounded-full border border-color bg-card p-2 text-main shadow-card transition-all duration-300 hover:border-brand hover:bg-brand-light"
+      >
+        <i-ph-palette-bold
+          class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl text-muted transition-all duration-300 ease-in-out group-hover:scale-110 group-hover:text-brand"
+        />
+      </button>
+    </el-tooltip>
 
     <!-- 水平向左丝滑滑出 -->
     <transition

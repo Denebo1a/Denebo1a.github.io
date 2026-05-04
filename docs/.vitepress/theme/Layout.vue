@@ -4,13 +4,16 @@ import { useData, useRoute } from "vitepress";
 import SiteHeader from "./components/SiteHeader.vue";
 import HomeView from "./components/HomeView.vue";
 import BlogIndexView from "./components/BlogIndexView.vue";
-import ResourcesIndexView from "./components/ResourcesIndexView.vue";
+import BassTabsIndex from "./components/BassTabsIndex.vue";
+import StudioView from "./components/StudioView.vue";
 import ArticleLayout from "./components/ArticleLayout.vue";
 import BassTabLayout from "./components/BassTabLayout.vue";
 import Breadcrumb from "./components/overlays/Breadcrumb.vue";
 import BackgroundCover from "./components/BackgroundCover.vue";
 import SiteFooter from "./components/SiteFooter.vue";
 import ToolBar from "./components/overlays/ToolBar.vue";
+import BottomBar from "./components/basstabsIndex/BottomBar.vue";
+import SideBar from "./components/basstabsIndex/SideBar.vue";
 import ContextMenu from "./components/overlays/ContextMenu.vue";
 import { useTheme } from "./composables/useTheme";
 import { useScrollPersistence } from "./composables/useScrollPersistence";
@@ -130,15 +133,18 @@ watch(
                 <BlogIndexView
                   v-else-if="frontmatter.layout === 'blog-index'"
                 />
-                <ResourcesIndexView
-                  v-else-if="frontmatter.layout === 'resources-index'"
+                <BassTabsIndex
+                  v-else-if="frontmatter.layout === 'basstabs-index'"
                 />
                 <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
                 <BassTabLayout
                   v-else-if="frontmatter.layout === 'basstab-detail'"
                 />
+                <StudioView v-else-if="frontmatter.layout === 'studio-view'" />
               </div>
             </Transition>
+            <SideBar v-if="frontmatter.layout === 'basstabs-index'" />
+            <BottomBar v-if="frontmatter.layout === 'basstabs-index'" />
             <ToolBar />
           </div>
           <Breadcrumb />
@@ -206,4 +212,3 @@ watch(
   scrollbar-color: rgba(156, 163, 175, 0.2) transparent;
 }
 </style>
-

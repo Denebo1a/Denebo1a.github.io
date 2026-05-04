@@ -1,7 +1,7 @@
 import { createContentLoader } from 'vitepress'
-import { formatDate } from '../../.vitepress/theme/utils/format'
+import { formatDate } from '../.vitepress/theme/utils/format'
 
-export default createContentLoader('resources/basstabs/posts/*.md', {
+export default createContentLoader('basstabs/posts/*.md', {
   transform(raw) {
     return raw
       .map(({ url, frontmatter }) => ({

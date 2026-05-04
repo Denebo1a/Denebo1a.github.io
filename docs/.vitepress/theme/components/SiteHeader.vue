@@ -8,7 +8,7 @@ import { useScrollPersistence } from "../composables/useScrollPersistence";
 
 import HomeIcon from "~icons/ph/house";
 import ArticleIcon from "~icons/ph/article";
-import ResourcesIcon from "~icons/ph/package";
+import BassTabsIcon from "~icons/ph/music-notes";
 import StudioIcon from "~icons/ph/atom";
 
 const { currentPageLabel, section } = useBreadcrumbs();
@@ -28,10 +28,10 @@ const navItems = [
     section: "blog",
   },
   {
-    url: "/resources/",
-    title: "资源",
-    icon: ResourcesIcon,
-    section: "resources",
+    url: "/basstabs/",
+    title: "乐谱",
+    icon: BassTabsIcon,
+    section: "basstabs",
   },
   {
     url: "/studio/",
@@ -44,7 +44,7 @@ const navItems = [
 const sectionTitleMap = {
   home: "首页",
   blog: "博客",
-  resources: "资源",
+  basstabs: "乐谱",
   studio: "Studio",
 };
 

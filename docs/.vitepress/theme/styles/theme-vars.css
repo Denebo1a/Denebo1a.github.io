@@ -1,77 +1,115 @@
 :root {
-  --color-brand: #0284c7;
-  --color-brand-light: #f0f9ff;
-  --color-brand-dark: #0369a1;
+  --color-brand: #006fee;
+  --color-brand-light: #e6f1fe;
+  --color-brand-dark: #005bc4;
 
-  --color-bg-base: #f8fafc;
+  --color-bg-base: #f9fafb;
   --color-bg-card: #ffffff;
-  --color-bg-alt: #f1f5f9;
+  --color-bg-alt: #f3f4f6;
 
-  --color-text-main: #0f172a;
-  --color-text-muted: #64748b;
+  --color-text-main: #111827;
+  --color-text-muted: #6b7280;
 
-  --color-border: #e2e8f0;
+  --color-border: #e5e7eb;
+  --color-bg-pattern: rgba(240, 240, 240, 0.71);
 
-  --shadow-card: 0 4px 20px rgba(15, 23, 42, 0.05);
-  --shadow-brand: 0 8px 24px rgba(2, 132, 199, 0.2);
-
-  --code-block-bg: #0d1117;
-  --code-block-title-bg: #161b22;
-  --code-block-border: rgba(240, 246, 252, 0.12);
-  --code-block-lang: rgba(240, 246, 252, 0.55);
-  --code-block-highlight: rgba(56, 139, 253, 0.16);
+  --shadow-card:
+    0 10px 25px -5px rgba(17, 24, 39, 0.03),
+    0 8px 10px -6px rgba(17, 24, 39, 0.01);
+  --shadow-brand: 0 10px 20px -4px rgba(0, 111, 238, 0.25);
 }
 
 [data-theme="forest"] {
-  --color-brand: #0f766e;
-  --color-brand-light: #f0fdfa;
-  --color-brand-dark: #115e59;
+  --color-brand: #0a8f7a;
+  --color-brand-light: #e6f7f4;
+  --color-brand-dark: #066a5a;
 
-  --color-bg-base: #f4f7f6;
+  --color-bg-base: #f7faf9;
   --color-bg-card: #ffffff;
-  --color-bg-alt: #eef2f1;
+  --color-bg-alt: #eff4f2;
 
-  --color-text-main: #134e4a;
-  --color-text-muted: #5e7976;
+  --color-text-main: #16332e;
+  --color-text-muted: #6b827e;
 
-  --color-border: #e2e8f0;
+  --color-border: #e2ebe8;
 
-  --shadow-card: 0 4px 20px rgba(19, 78, 74, 0.05);
-  --shadow-brand: 0 8px 24px rgba(15, 118, 110, 0.2);
+  --shadow-card:
+    0 10px 25px -5px rgba(22, 51, 46, 0.03),
+    0 8px 10px -6px rgba(22, 51, 46, 0.02);
+  --shadow-brand: 0 10px 20px -4px rgba(10, 143, 122, 0.25);
 }
 
-[data-theme="autumn"] {
-  --color-brand: #ea580c;
-  --color-brand-light: #fff7ed;
-  --color-brand-dark: #c2410c;
+[data-theme="iris"] {
+  /* 品牌色：鸢尾紫。去除了传统紫色的洋红底色，偏向冷色调，充满科技感与神秘感 */
+  --color-brand: #7047eb;
+  --color-brand-light: #f3f0ff;
+  --color-brand-dark: #5028c6;
 
-  --color-bg-base: #fafaf9;
+  /* 背景色：带有极微弱丁香紫底蕴的冷白。能让整个页面看起来非常干净通透 */
+  --color-bg-base: #faf9fd;
   --color-bg-card: #ffffff;
-  --color-bg-alt: #f5f5f4;
+  --color-bg-alt: #f2f0f7;
 
-  --color-text-main: #292524;
-  --color-text-muted: #78716c;
+  /* 文本色：放弃纯黑，采用极深的黑紫色（暗夜紫）。让文字在阅读时更显优雅，减少视觉疲劳 */
+  --color-text-main: #1a1525;
+  --color-text-muted: #6c667a;
 
-  --color-border: #e7e5e4;
+  /* 边框：与背景高度融合的浅雪青色边框，保持组件边缘的呼吸感 */
+  --color-border: #e6e4eb;
 
-  --shadow-card: 0 4px 20px rgba(41, 37, 36, 0.05);
-  --shadow-brand: 0 8px 24px rgba(234, 88, 12, 0.2);
+  /* 阴影：卡片阴影采用基础文本的黑紫色进行极低透明度弥散，品牌阴影则带有鸢尾紫的轻微发光效果 */
+  --shadow-card:
+    0 10px 25px -5px rgba(26, 21, 37, 0.04),
+    0 8px 10px -6px rgba(26, 21, 37, 0.02);
+  --shadow-brand: 0 10px 20px -4px rgba(112, 71, 235, 0.25);
+}
+
+[data-theme="noir"] {
+  /* 品牌色：极深的碳黑 (Zinc-900)。比纯黑多了一丝呼吸感，作为按钮或高亮标签时显得极具专业度 */
+  --color-brand: #18181b;
+  --color-brand-light: #f4f4f5;
+  --color-brand-dark: #000000;
+
+  /* 背景色：高档相纸般的纯粹。底色采用极其微弱的冷灰白，让纯白的卡片在上面能够自然浮现 */
+  --color-bg-base: #fafafa;
+  --color-bg-card: #ffffff;
+  --color-bg-alt: #f4f4f5;
+
+  /* 文本色：极致的锐利。主文本几乎接近纯黑，确保在密集的代码或长篇学术段落中拥有最佳的阅读对比度 */
+  --color-text-main: #09090b;
+  --color-text-muted: #71717a;
+
+  /* 边框：极其克制的浅灰。在极简设计中，边框应该尽量“隐形”，更多依靠排版的留白来划分结构 */
+  --color-border: #e4e4e7;
+
+  /* 阴影：干净利落的无色系物理阴影。没有色彩光晕的干扰，配合半透明的毛玻璃组件能呈现出最顶级的现代质感 */
+  --shadow-card:
+    0 10px 25px -5px rgba(0, 0, 0, 0.04), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+  --shadow-brand: 0 10px 20px -4px rgba(0, 0, 0, 0.15);
 }
 
 [data-theme="dark"] {
-  --color-brand: #38bdf8;
-  --color-brand-light: rgba(56, 189, 248, 0.1);
-  --color-brand-dark: #0ea5e9;
+  /* 品牌色保持不变（哑光霜蓝），作为视觉锚点 */
+  --color-brand: #8fa4b5;
+  --color-brand-light: rgba(143, 164, 181, 0.12);
+  --color-brand-dark: #63788a;
 
-  --color-bg-base: #0f172a;
-  --color-bg-card: #1e293b;
-  --color-bg-alt: #334155;
+  /* 背景色保持不变（深岩灰），维持环境光的柔和沉稳 */
+  --color-bg-base: #141415;
+  --color-bg-card: #1c1c1e;
+  --color-bg-alt: #242426;
 
-  --color-text-main: #f8fafc;
-  --color-text-muted: #94a3b8;
+  /* --- 关键优化区域 --- */
 
-  --color-border: #334155;
+  /* 文本色：降低主文本亮度，提升辅助文本亮度，大幅缩小两者的跨度 */
+  /* 主文本 (B3B4B8)：从 80% 明度降至约 70%。这是一种非常内敛的“哑光银”，既保证了阅读的清晰度，又彻底消灭了眩光 */
+  --color-text-main: #b3b4b8;
 
-  --shadow-card: 0 8px 32px rgba(0, 0, 0, 0.4);
-  --shadow-brand: 0 4px 24px rgba(56, 189, 248, 0.25);
+  /* 辅助文本 (8E8F94)：从 48% 明度提升至约 57%。它现在能够非常平滑地融入正文流中，不再像是被“隐藏”起来的无效信息 */
+  --color-text-muted: #8e8f94;
+
+  /* 边框和阴影保持不变，维持清透的空间感 */
+  --color-border: rgba(255, 255, 255, 0.05);
+  --shadow-card: 0 8px 24px rgba(0, 0, 0, 0.4);
+  --shadow-brand: 0 4px 12px rgba(143, 164, 181, 0.1);
 }

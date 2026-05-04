@@ -15,7 +15,7 @@
 
       <!-- 内部实际内容遮罩层（使用 bg-alt 盖住光束中间） -->
       <div
-        class="relative z-10 flex inline-flex h-full w-full items-center justify-center gap-1 rounded-full border border-color bg-card py-1 pl-1 pr-2 font-medium shadow-card group-hover:shadow-none"
+        class="relative z-10 flex inline-flex h-full w-full items-center justify-center gap-1 rounded-full border border-color bg-card py-1 pl-1 pr-2 font-medium text-main shadow-card group-hover:shadow-none"
       >
         <img src="/avatar.png" alt="Denebora" class="h-6 w-6 rounded-full" />
         Denebora

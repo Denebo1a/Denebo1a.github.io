@@ -45,51 +45,10 @@
           v-model:tagQueryModel="tagQueryInput"
           :allTags="tags"
         />
-
-        <div
-          class="rounded-[1.5rem] border border-color bg-card p-4 shadow-card transition-colors duration-300"
-        >
-          <div class="mb-3 flex items-center gap-2 border-b border-color pb-3">
-            <i-material-symbols-filter-alt-outline class="h-5 w-5 text-brand" />
-            <h4 class="font-bold text-main">按类型筛选</h4>
-          </div>
-          <nav class="space-y-1">
-            <div
-              v-for="cat in categories"
-              @click="selectedCategory = cat"
-              :key="cat"
-              class="group flex cursor-pointer items-center justify-between rounded-md px-3 py-1.5"
-              :class="{
-                'bg-brand-light': selectedCategory === cat,
-                'hover:bg-alt': selectedCategory !== cat,
-              }"
-            >
-              <span
-                class="text-sm font-semibold transition-colors"
-                :class="{
-                  'text-brand': selectedCategory === cat,
-                  'text-muted group-hover:text-brand': selectedCategory !== cat,
-                }"
-              >
-                {{ cat }}
-              </span>
-              <span
-                class="inline-flex items-center justify-center rounded-full bg-alt px-2 py-0.5 text-[0.65rem] font-bold transition-colors"
-                :class="{
-                  'bg-brand text-slate-100': selectedCategory === cat,
-                  'text-muted group-hover:bg-brand group-hover:text-slate-100':
-                    selectedCategory !== cat,
-                }"
-              >
-                {{
-                  cat === "全部"
-                    ? allPosts.length
-                    : allPosts.filter((p) => p.category === cat).length
-                }}
-              </span>
-            </div>
-          </nav>
-        </div>
+        <CategoryNav
+          :categories="categories"
+          v-model:selectedCat="selectedCategory"
+        />
       </aside>
     </div>
   </div>
@@ -104,6 +63,7 @@ import ListArticleCard from "./blogIndex/ListArticleCard.vue";
 
 import LayoutMenu from "./blogIndex/Aside/LayoutMenu.vue";
 import Filter from "./blogIndex/Aside/Filter.vue";
+import CategoryNav from "./blogIndex/Aside/CategoryNav.vue";
 
 const searchQueryInput = ref("");
 const searchQuery = ref("");
@@ -130,8 +90,25 @@ const selectedLayout = ref("grid");
 const selectedSort = ref("date");
 
 const categories = computed(() => {
-  const cats = new Set(allPosts.map((p) => p.category).filter(Boolean));
-  return ["全部", ...Array.from(cats)];
+  // 1. 遍历一次 allPosts，统计每个分类的数量
+  const categoryCounts = allPosts.reduce((acc, post) => {
+    const cat = post.category;
+    if (cat) {
+      acc[cat] = (acc[cat] || 0) + 1;
+    }
+    return acc;
+  }, {});
+
+  // 2. 将统计对象转换为目标数组，并把“全部”放在首位
+  const result = [
+    { category: "全部", count: allPosts.length },
+    ...Object.entries(categoryCounts).map(([category, count]) => ({
+      category,
+      count,
+    })),
+  ];
+
+  return result;
 });
 
 const tags = computed(() => {
