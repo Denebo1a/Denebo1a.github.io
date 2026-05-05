@@ -1,10 +1,18 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useData } from "vitepress";
 import SheetPlayer from "./SheetPlayer.vue";
 import Links from "./basstab/Links.vue";
 import Info from "./basstab/Info.vue";
+import { useSiteConfig } from "../composables/useSiteConfig";
 
 const { frontmatter } = useData();
+const { resolveAssetUrl } = useSiteConfig();
+
+const coverUrl = computed(() => {
+  const cover = frontmatter.value.cover;
+  return typeof cover === "string" && cover ? resolveAssetUrl(cover) : "";
+});
 </script>
 
 <template>
@@ -20,14 +28,10 @@ const { frontmatter } = useData();
       <aside class="space-y-4 self-start lg:col-span-2">
         <!-- 封面图 -->
         <div
-          v-if="frontmatter.cover"
+          v-if="coverUrl"
           class="overflow-hidden rounded-2xl border border-color shadow-card"
         >
-          <img
-            :src="frontmatter.cover"
-            :alt="frontmatter.title"
-            class="w-full object-cover"
-          />
+          <img :src="coverUrl" :alt="frontmatter.title" class="w-full object-cover" />
         </div>
 
         <!-- 曲目信息 -->

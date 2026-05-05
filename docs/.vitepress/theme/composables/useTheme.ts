@@ -8,7 +8,18 @@ import darkIcon from '~icons/ph/moon-stars-bold'
 const STORAGE_KEY = 'blog-theme'
 const DEFAULT_THEME = 'default'
 
-const themes = [
+type ThemeId = 'default' | 'forest' | 'iris' | 'noir' | 'dark'
+type ThemeIconClassResolver = (currentTheme: ThemeId) => string
+
+type ThemeOption = {
+  id: ThemeId
+  name: string
+  color: string
+  icon: unknown
+  menuIconClass?: ThemeIconClassResolver
+}
+
+const themes: ThemeOption[] = [
   {
     id: 'default',
     name: 'Ocean',
@@ -32,6 +43,7 @@ const themes = [
     name: 'Noir',
     color: '#18181B',
     icon: NoirIcon,
+    menuIconClass: (currentTheme) => (currentTheme === 'dark' ? 'text-white' : ''),
   },
   {
     id: 'dark',
@@ -40,8 +52,6 @@ const themes = [
     icon: darkIcon,
   },
 ] as const
-
-type ThemeId = (typeof themes)[number]['id']
 
 const currentTheme = ref<ThemeId>(DEFAULT_THEME)
 const themeIds = new Set<string>(themes.map((theme) => theme.id))

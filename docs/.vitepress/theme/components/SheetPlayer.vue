@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { withBase } from "vitepress";
+import { useSiteConfig } from "../composables/useSiteConfig";
 
 const props = defineProps<{
   src: string;
 }>();
+
+const { resolveAssetDir, resolveAssetUrl } = useSiteConfig();
 
 // --- 状态 ---
 const wrapper = ref<HTMLElement | null>(null);
@@ -42,12 +45,13 @@ const onSeekEnd = (e: Event) => {
 onMounted(async () => {
   if (import.meta.env.SSR) return;
 
-  const at = await import(withBase("/alphatab/alphaTab.mjs"));
+  const scriptFile = resolveAssetUrl("/alphatab/alphaTab.mjs");
+  const at = await import(/* @vite-ignore */ scriptFile);
 
   const settings = new at.Settings();
 
   settings.core.useWorkers = true;
-  settings.core.scriptFile = withBase("/alphatab/alphaTab.mjs");
+  settings.core.scriptFile = scriptFile;
   // 显示：五线谱 + TAB 双行
   settings.notation.notationMode = at.NotationMode.GuitarPro;
   // 按页换行布局
@@ -59,8 +63,8 @@ onMounted(async () => {
   settings.player.scrollMode = at.ScrollMode.OffScreen;
   settings.player.scrollElement = wrapper.value!;
   // 强制指定底层字体与音源库目录
-  settings.core.fontDirectory = withBase("/font/");
-  settings.player.soundFont = withBase("/soundfont/sonivox.sf3");
+  settings.core.fontDirectory = resolveAssetDir("/font");
+  settings.player.soundFont = resolveAssetUrl("/soundfont/sonivox.sf3");
 
   const api = new at.AlphaTabApi(wrapper.value!, settings);
   apiRef = api;

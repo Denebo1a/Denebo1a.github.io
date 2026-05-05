@@ -5,9 +5,30 @@ import IconsResolver from 'unplugin-icons/resolver'
 import { customLanguages } from './shiki-langs/index.mts'
 import { generateSidebar } from 'vitepress-sidebar'
 
-const HOSTNAME = "https://Denebo1a.github.io"
+const HTTP_URL_RE = /^https?:\/\//i
+
+const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '')
+const ensureLeadingSlash = (value: string) => value.startsWith('/') ? value : `/${value}`
+
+const SITE_HOSTNAME = trimTrailingSlash(
+  process.env.VITEPRESS_SITE_HOSTNAME || 'https://Denebo1a.github.io'
+)
+
+const ASSET_BASE = trimTrailingSlash(process.env.VITEPRESS_ASSET_BASE || '')
+
+const resolveAbsoluteAssetUrl = (path: string) => {
+  if (HTTP_URL_RE.test(path)) return path
+
+  const normalizedPath = ensureLeadingSlash(path)
+
+  if (!ASSET_BASE) return `${SITE_HOSTNAME}${normalizedPath}`
+  if (HTTP_URL_RE.test(ASSET_BASE)) return `${ASSET_BASE}${normalizedPath}`
+
+  return `${SITE_HOSTNAME}${ensureLeadingSlash(ASSET_BASE)}${normalizedPath}`
+}
 
 export default defineConfig({
+
   title: 'DeneBlog',
   description: 'Denebora的数字花园',
 
@@ -26,7 +47,7 @@ export default defineConfig({
   //
   transformPageData(pageData) {
     // 获取当前文章的相对路径，并转换为线上 URL
-    const canonicalUrl = `${HOSTNAME}/${pageData.relativePath}`
+    const canonicalUrl = `${SITE_HOSTNAME}/${pageData.relativePath}`
       .replace(/index\.md$/, '')
       .replace(/\.md$/, '.html')
 
@@ -36,8 +57,8 @@ export default defineConfig({
 
     // 处理封面图：如果在 frontmatter 中指定了 cover，就拼成绝对路径，否则用默认图
     const imageUrl = pageData.frontmatter.cover
-      ? `${HOSTNAME}${pageData.frontmatter.cover}`
-      : `${HOSTNAME}/default-cover.jpg`
+      ? resolveAbsoluteAssetUrl(pageData.frontmatter.cover)
+      : resolveAbsoluteAssetUrl('/default-cover.jpg')
 
     // 初始化 head 数组（防止未定义）
     pageData.frontmatter.head ??= []
@@ -63,6 +84,8 @@ export default defineConfig({
   // 配置默认文档布局的侧边栏
   themeConfig: {
     siteTitle: "← 离开裏世界",
+    siteHostname: SITE_HOSTNAME,
+    assetBase: ASSET_BASE,
     nav: [
       {
         text: '入口',

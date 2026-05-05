@@ -26,6 +26,9 @@ const selectTheme = (id) => {
   isOpen.value = false;
 };
 
+const resolveThemeIconClass = (theme) =>
+  theme.menuIconClass?.(currentTheme.value) ?? "";
+
 const activeTheme = computed(
   () => themes.find((t) => t.id === currentTheme.value) || themes[0],
 );
@@ -66,7 +69,11 @@ const activeTheme = computed(
           "
         >
           <div class="flex items-center gap-3">
-            <component :is="theme.icon" class="h-4 w-4" />
+            <component
+              :is="theme.icon"
+              class="h-4 w-4"
+              :class="resolveThemeIconClass(theme)"
+            />
             {{ theme.name }}
           </div>
           <i-ph-check-bold class="h-4 w-4" v-if="currentTheme === theme.id" />

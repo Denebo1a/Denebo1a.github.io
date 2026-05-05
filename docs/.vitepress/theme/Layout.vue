@@ -1,5 +1,54 @@
+<template>
+  <DefaultTheme.Layout v-if="frontmatter.layout === 'doc'" />
+  <template v-else>
+    <BackgroundCover />
+    <ContextMenu />
+    <LoadingOverlay :visible="isRouteLoading" />
+    <div
+      class="relative z-0 flex h-screen flex-col overflow-hidden bg-transparent font-sans"
+    >
+      <SiteHeader />
+
+      <main
+        id="site-main-scroll"
+        class="custom-scrollbar w-full flex-1 overflow-y-auto"
+      >
+        <div class="flex min-h-full flex-col">
+          <div class="relative flex-1 px-20 py-10">
+            <Transition name="page-fade" mode="out-in">
+              <div :key="route.path">
+                <HomeView v-if="frontmatter.layout === 'home'" />
+                <BlogIndexView
+                  v-else-if="frontmatter.layout === 'blog-index'"
+                />
+                <BassTabsIndex
+                  v-else-if="frontmatter.layout === 'basstabs-index'"
+                />
+                <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
+                <BassTabLayout
+                  v-else-if="frontmatter.layout === 'basstab-detail'"
+                />
+                <StudioView v-else-if="frontmatter.layout === 'studio-view'" />
+              </div>
+            </Transition>
+            <Transition name="fade">
+              <SideBar v-if="frontmatter.layout === 'basstabs-index'" />
+            </Transition>
+            <Transition name="fade">
+              <BottomBar v-if="frontmatter.layout === 'basstabs-index'" />
+            </Transition>
+            <ToolBar />
+          </div>
+          <Breadcrumb />
+          <SiteFooter id="site-footer" />
+        </div>
+      </main>
+    </div>
+  </template>
+</template>
+
 <script setup>
-import { nextTick, onBeforeUnmount, onMounted, watch } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useData, useRoute } from "vitepress";
 import SiteHeader from "./components/SiteHeader.vue";
 import HomeView from "./components/HomeView.vue";
@@ -15,6 +64,7 @@ import ToolBar from "./components/overlays/ToolBar.vue";
 import BottomBar from "./components/basstabsIndex/BottomBar.vue";
 import SideBar from "./components/basstabsIndex/SideBar.vue";
 import ContextMenu from "./components/overlays/ContextMenu.vue";
+import LoadingOverlay from "./components/LoadingOverlay.vue";
 import { useTheme } from "./composables/useTheme";
 import { useScrollPersistence } from "./composables/useScrollPersistence";
 
@@ -32,9 +82,38 @@ const {
   getScrollTop,
 } = useScrollPersistence();
 
+const isRouteLoading = ref(false);
+const ROUTE_LOADING_MIN_DURATION = 320;
+let routeLoadingStartedAt = 0;
+let routeLoadingTimer = null;
+
 const isArticleLayout = () => frontmatter.value.layout === "article";
 
 const getScrollRoot = () => document.getElementById("site-main-scroll");
+
+const clearRouteLoadingTimer = () => {
+  if (routeLoadingTimer !== null) {
+    window.clearTimeout(routeLoadingTimer);
+    routeLoadingTimer = null;
+  }
+};
+
+const showRouteLoading = () => {
+  clearRouteLoadingTimer();
+  routeLoadingStartedAt = performance.now();
+  isRouteLoading.value = true;
+};
+
+const hideRouteLoading = () => {
+  const elapsed = performance.now() - routeLoadingStartedAt;
+  const remaining = Math.max(0, ROUTE_LOADING_MIN_DURATION - elapsed);
+
+  clearRouteLoadingTimer();
+  routeLoadingTimer = window.setTimeout(() => {
+    isRouteLoading.value = false;
+    routeLoadingTimer = null;
+  }, remaining);
+};
 
 const scrollToHash = () => {
   const hash = window.location.hash;
@@ -90,12 +169,15 @@ onMounted(async () => {
 onBeforeUnmount(() => {
   saveScrollPosition(route.path, getScrollTop());
   unbindScrollRoot();
+  clearRouteLoadingTimer();
   window.removeEventListener("hashchange", handleHashChange);
 });
 
 watch(
   () => route.path,
   async (nextPath, previousPath) => {
+    showRouteLoading();
+
     if (previousPath) {
       saveScrollPosition(previousPath, getScrollTop());
     }
@@ -107,57 +189,12 @@ watch(
     if (isArticleLayout()) {
       syncProgress(nextPath);
     }
+
+    await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+    hideRouteLoading();
   },
 );
 </script>
-
-<template>
-  <DefaultTheme.Layout v-if="frontmatter.layout === 'doc'" />
-  <template v-else>
-    <BackgroundCover />
-    <ContextMenu />
-    <div
-      class="relative z-0 flex h-screen flex-col overflow-hidden bg-transparent font-sans"
-    >
-      <SiteHeader />
-
-      <main
-        id="site-main-scroll"
-        class="custom-scrollbar w-full flex-1 overflow-y-auto"
-      >
-        <div class="flex min-h-full flex-col">
-          <div class="relative flex-1 px-20 py-10">
-            <Transition name="page-fade" mode="out-in">
-              <div :key="route.path">
-                <HomeView v-if="frontmatter.layout === 'home'" />
-                <BlogIndexView
-                  v-else-if="frontmatter.layout === 'blog-index'"
-                />
-                <BassTabsIndex
-                  v-else-if="frontmatter.layout === 'basstabs-index'"
-                />
-                <ArticleLayout v-else-if="frontmatter.layout === 'article'" />
-                <BassTabLayout
-                  v-else-if="frontmatter.layout === 'basstab-detail'"
-                />
-                <StudioView v-else-if="frontmatter.layout === 'studio-view'" />
-              </div>
-            </Transition>
-            <Transition name="fade">
-              <SideBar v-if="frontmatter.layout === 'basstabs-index'" />
-            </Transition>
-            <Transition name="fade">
-              <BottomBar v-if="frontmatter.layout === 'basstabs-index'" />
-            </Transition>
-            <ToolBar />
-          </div>
-          <Breadcrumb />
-          <SiteFooter id="site-footer" />
-        </div>
-      </main>
-    </div>
-  </template>
-</template>
 
 <style>
 .page-fade-enter-active,

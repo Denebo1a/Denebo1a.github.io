@@ -24,12 +24,14 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import { useBassTabsIndex } from "../../../composables/useBassTabsIndex";
+import { useSiteConfig } from "../../../composables/useSiteConfig";
 
 const props = defineProps<{
   artist: string;
 }>();
 
 const { selectedArtist, toggleArtist } = useBassTabsIndex();
+const { resolveAssetUrl } = useSiteConfig();
 const avatarLoadFailed = ref(false);
 
 const initial = computed(() => {
@@ -47,7 +49,9 @@ const artistSlug = computed(() =>
     .replace(/^-+|-+$/g, ""),
 );
 
-const avatarUrl = computed(() => `/basstabs/artists/${artistSlug.value}.webp`);
+const avatarUrl = computed(() =>
+  resolveAssetUrl(`/basstabs/artists/${artistSlug.value}.webp`),
+);
 
 watch(
   () => props.artist,
