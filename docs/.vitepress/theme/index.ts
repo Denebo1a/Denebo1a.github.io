@@ -1,6 +1,7 @@
 import { Theme } from 'vitepress'
 import DefaultTheme from 'vitepress/theme'
 import Layout from './Layout.vue'
+import MdImage from './components/markdown/MdImage.vue'
 import './style.css'
 import './styles/theme-vars.css'
 import './styles/element-plus.css'
@@ -43,6 +44,8 @@ export default {
   },
   Layout,
   async enhanceApp({ app, router, siteData }) {
+    app.component('MdImage', MdImage)
+
     // 增加环境判断：只在客户端（浏览器环境）加载 Element Plus
     if (!import.meta.env.SSR) {
       // 动态异步引入 JS 模块和语言包

@@ -1,4 +1,5 @@
 import { defineConfig } from 'vitepress'
+import type Token from 'markdown-it/lib/token.mjs'
 import Icons from 'unplugin-icons/vite'
 import Components from 'unplugin-vue-components/vite'
 import IconsResolver from 'unplugin-icons/resolver'
@@ -27,6 +28,15 @@ const resolveAbsoluteAssetUrl = (path: string) => {
   return `${SITE_HOSTNAME}${ensureLeadingSlash(ASSET_BASE)}${normalizedPath}`
 }
 
+const escapeHtmlAttr = (value: string) => value
+  .replace(/&/g, '&amp;')
+  .replace(/"/g, '&quot;')
+  .replace(/</g, '&lt;')
+  .replace(/>/g, '&gt;')
+
+const getImageAlt = (token: Token) =>
+  token.children?.map((child) => child.content).join('') || ''
+
 export default defineConfig({
 
   title: 'DeneBlog',
@@ -42,6 +52,25 @@ export default defineConfig({
     headers: {
       // 提取 h2 和 h3 标题
       level: [2, 3]
+    },
+    config: (md) => {
+      md.renderer.rules.image = (tokens, idx) => {
+        const token = tokens[idx]
+        const src = token.attrGet('src') || ''
+        const alt = getImageAlt(token)
+        const title = token.attrGet('title') || ''
+
+        const attrs = [
+          `src="${escapeHtmlAttr(src)}"`,
+          `alt="${escapeHtmlAttr(alt)}"`
+        ]
+
+        if (title) {
+          attrs.push(`title="${escapeHtmlAttr(title)}"`)
+        }
+
+        return `<MdImage ${attrs.join(' ')} />`
+      }
     }
   },
   //
