@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
+import { openImagePreview } from "../../composables/useImagePreview";
 
 const props = withDefaults(
   defineProps<{
@@ -35,6 +36,16 @@ const handleError = () => {
   errored.value = true;
 };
 
+const handlePreview = () => {
+  if (!loaded.value || errored.value || props.noZoom) return;
+
+  openImagePreview({
+    src: props.src,
+    alt: props.alt,
+    title: props.title,
+  });
+};
+
 watch(() => props.src, resetState);
 
 const imageClassName = computed(() => [
@@ -47,7 +58,7 @@ const imageClassName = computed(() => [
 </script>
 
 <template>
-  <div class="base-image">
+  <div class="base-image" :class="{ 'is-no-zoom': props.noZoom }">
     <div
       v-if="!loaded && !errored"
       class="base-image__skeleton"
@@ -61,9 +72,15 @@ const imageClassName = computed(() => [
       :class="imageClassName"
       @load="handleLoad"
       @error="handleError"
+      @click="handlePreview"
     />
 
-    <div v-if="errored" class="base-image__error" role="img" :aria-label="props.alt || '图片加载失败'">
+    <div
+      v-if="errored"
+      class="base-image__error"
+      role="img"
+      :aria-label="props.alt || '图片加载失败'"
+    >
       <span>图片加载失败</span>
     </div>
   </div>
@@ -106,7 +123,13 @@ const imageClassName = computed(() => [
   width: 100%;
   height: auto;
   opacity: 0;
+  cursor: zoom-in;
   transition: opacity 0.28s ease;
+}
+
+.base-image.is-no-zoom .base-image__img,
+.base-image__img.no-zoom {
+  cursor: auto;
 }
 
 .base-image__img.is-loaded {

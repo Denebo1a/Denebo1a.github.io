@@ -12,36 +12,8 @@ import './styles/vp-code.css'
 import 'element-plus/dist/index.css'
 import 'element-plus/theme-chalk/dark/css-vars.css'
 
-import { onMounted, watch, nextTick } from 'vue'
-import { useRoute } from 'vitepress'
-import mediumZoom from 'medium-zoom'
-
 export default {
   extends: DefaultTheme,
-  setup() {
-    const route = useRoute()
-    const initZoom = () => {
-      mediumZoom('.vp-doc img:not(.no-zoom), .prose img:not(.no-zoom)', {
-        background: 'transparent', 
-        margin: 24
-      })
-    }
-
-    // 首次挂载时初始化
-    onMounted(() => {
-      initZoom()
-    })
-
-    // 监听路由变化，每次切换页面后重新绑定图片
-    watch(
-      () => route.path,
-      () => {
-        nextTick(() => {
-          initZoom()
-        })
-      }
-    )
-  },
   Layout,
   async enhanceApp({ app, router, siteData }) {
     app.component('MdImage', MdImage)

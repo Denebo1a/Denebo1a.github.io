@@ -4,6 +4,7 @@
     <BackgroundCover />
     <ContextMenu />
     <LoadingOverlay :visible="isRouteLoading" />
+    <ImagePreviewOverlay />
     <div
       class="relative z-0 flex h-screen flex-col overflow-hidden bg-transparent font-sans"
     >
@@ -65,6 +66,7 @@ import BottomBar from "./components/basstabsIndex/BottomBar.vue";
 import SideBar from "./components/basstabsIndex/SideBar.vue";
 import ContextMenu from "./components/overlays/ContextMenu.vue";
 import LoadingOverlay from "./components/LoadingOverlay.vue";
+import ImagePreviewOverlay from "./components/overlays/ImagePreviewOverlay.vue";
 import { useTheme } from "./composables/useTheme";
 import { useScrollPersistence } from "./composables/useScrollPersistence";
 

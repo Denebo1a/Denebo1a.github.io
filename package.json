@@ -32,7 +32,6 @@
   },
   "dependencies": {
     "@coderline/alphatab": "^1.8.2",
-    "@coderline/alphatab-vite": "^1.8.2",
-    "medium-zoom": "^1.1.0"
+    "@coderline/alphatab-vite": "^1.8.2"
   }
 }
