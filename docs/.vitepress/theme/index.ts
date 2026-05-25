@@ -5,7 +5,7 @@ import MdImage from './components/markdown/MdImage.vue'
 import './style.css'
 
 const BUSUANZI_SCRIPT_SELECTOR = 'script[data-busuanzi-script="self-hosted"]'
-const BUSUANZI_API_URL = '/busuanzi/api'
+const BUSUANZI_API_URL = 'https://denebora.top/busuanzi/api'
 const BUSUANZI_SCRIPT_FALLBACK = '/busuanzi/busuanzi.js'
 
 function mountBusuanziScript(scriptUrl: string) {

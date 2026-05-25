@@ -51,7 +51,7 @@ const referenceLinks = [
     icon: EmailIcon,
   },
   {
-    url: "http://wpa.qq.com/msgrd?v=3&uin=3395882338&site=qq&menu=yes",
+    url: "https://wpa.qq.com/msgrd?v=3&uin=3395882338&site=qq&menu=yes",
     icon: QQIcon,
   },
   {
