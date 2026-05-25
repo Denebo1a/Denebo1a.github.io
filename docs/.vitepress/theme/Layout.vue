@@ -86,6 +86,7 @@ const {
 
 const isRouteLoading = ref(false);
 const ROUTE_LOADING_MIN_DURATION = 320;
+const PAGE_TRANSITION_DURATION = 240;
 let routeLoadingStartedAt = 0;
 let routeLoadingTimer = null;
 
@@ -187,6 +188,13 @@ watch(
     await nextTick();
     bindScrollRoot(getScrollRoot());
     await restorePageState();
+
+    if (typeof window !== "undefined") {
+      await nextTick();
+      await new Promise((resolve) => window.setTimeout(resolve, PAGE_TRANSITION_DURATION));
+      await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+      globalThis.__refreshBusuanzi?.();
+    }
 
     if (isArticleLayout()) {
       syncProgress(nextPath);

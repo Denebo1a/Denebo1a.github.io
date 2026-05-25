@@ -1,0 +1,34 @@
+/* =========================================
+   Artalk 浅色模式（默认）样式覆盖
+========================================= */
+.artalk {
+  --at-color-main: var(--color-brand); /* 主题色 */
+  --at-color-bg: var(--color-bg-base); /* 深色主背景 */
+
+  --at-color-font: var(--color-text-main); /* 浅色正文 */
+  --at-color-deep: var(--color-text-main); /* 最亮文本 */
+  --at-color-sub: var(--color-text-muted);
+  --at-color-grey: var(--color-text-muted);
+  --at-color-meta: var(--color-text-muted);
+  --at-color-border: var(--color-border); /* 深色边框 */
+  --at-color-light: var(--color-brand-light);
+}
+
+/* =========================================
+   Artalk 深色模式（Dark Mode）样式覆盖
+========================================= */
+/* 注意：请根据你网站的深色模式触发策略（如 .dark 或 [data-theme='dark']）调整选择器 */
+html.dark .artalk,
+[data-theme="dark"] .artalk,
+.artalk.artalk-dark {
+  --at-color-main: var(--color-brand); /* 主题色 */
+  --at-color-bg: var(--color-bg-alt); /* 深色主背景 */
+
+  --at-color-font: var(--color-text-main); /* 浅色正文 */
+  --at-color-deep: var(--color-text-main); /* 最亮文本 */
+  --at-color-sub: var(--color-text-muted);
+  --at-color-grey: var(--color-text-muted);
+  --at-color-meta: var(--color-text-muted);
+  --at-color-border: var(--color-border); /* 深色边框 */
+  --at-color-light: var(--color-brand-light);
+}

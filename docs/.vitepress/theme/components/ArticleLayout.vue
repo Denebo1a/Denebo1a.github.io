@@ -1,32 +1,38 @@
 <template>
-  <div class="relative flex w-full flex-col items-start gap-4 lg:flex-row">
-    <article
-      class="flex w-full flex-col space-y-4 rounded-[1rem] border border-color bg-card p-8 shadow-card md:w-[80%]"
-    >
-      <header class="flex w-full flex-col">
-        <Header
-          :category="frontmatter.category"
-          :date="formattedDate"
-          :title="page.title"
-          :tags="frontmatter.tags"
-          :summary="frontmatter.summary"
+  <div class="relative flex w-full flex-col gap-4 lg:flex-row">
+    <div class="w-full md:w-[80%]">
+      <article
+        class="flex w-full flex-col space-y-4 rounded-[1rem] border border-color bg-card p-8 shadow-card"
+      >
+        <header class="flex w-full flex-col">
+          <Header
+            :category="frontmatter.category"
+            :date="formattedDate"
+            :title="page.title"
+            :tags="frontmatter.tags"
+            :summary="frontmatter.summary"
+          />
+        </header>
+
+        <div class="vp-doc article-content">
+          <Content />
+        </div>
+        <Tags :tags="frontmatter.tags" />
+        <Artalk />
+      </article>
+    </div>
+
+    <aside class="flex w-full flex-col gap-4 md:w-[20%]">
+      <ProfileCard />
+      <div class="sticky top-4 flex w-full flex-col gap-4">
+        <Toc
+          :headers="headers"
+          :active-hash="activeHash"
+          @tocClick="handleTocClick"
         />
-      </header>
-
-      <div class="vp-doc article-content transition-colors duration-300">
-        <Content />
+        <ShareCard :xShareLink="xShareLink" @call-copy="handleCopy" />
+        <RelatedPosts :related-posts="relatedPosts" />
       </div>
-      <Tags :tags="frontmatter.tags" />
-    </article>
-
-    <aside class="sticky top-4 w-full space-y-4 md:w-[20%]">
-      <Toc
-        :headers="headers"
-        :active-hash="activeHash"
-        @tocClick="handleTocClick"
-      />
-      <ShareCard :xShareLink="xShareLink" @call-copy="handleCopy" />
-      <RelatedPost :related-posts="relatedPosts" />
     </aside>
   </div>
 </template>
@@ -44,13 +50,17 @@ import { useData, useRoute } from "vitepress";
 import { data as allPosts } from "../../../blog/posts.data";
 import { formatDate } from "../utils/format";
 import { ElMessage } from "element-plus";
-import ShareCard from "./article/aside/ShareCard.vue";
 
 import { copyTextToClipboard } from "../utils/copyText";
-import RelatedPost from "./article/aside/RelatedPost.vue";
-import Tags from "./article/Tags.vue";
-import Toc from "./article/aside/Toc.vue";
+
 import Header from "./article/Header.vue";
+import Tags from "./article/Tags.vue";
+import Artalk from "./artalk/Artalk.vue";
+
+import Toc from "./article/aside/Toc.vue";
+import ShareCard from "./article/aside/ShareCard.vue";
+import RelatedPosts from "./article/aside/RelatedPosts.vue";
+import ProfileCard from "./article/aside/ProfileCard.vue";
 
 const { page, frontmatter } = useData();
 const route = useRoute();

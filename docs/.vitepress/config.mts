@@ -12,10 +12,12 @@ const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '')
 const ensureLeadingSlash = (value: string) => value.startsWith('/') ? value : `/${value}`
 
 const SITE_HOSTNAME = trimTrailingSlash(
-  process.env.VITEPRESS_SITE_HOSTNAME || 'https://Denebo1a.github.io'
+  process.env.VITEPRESS_SITE_HOSTNAME || 'https://example.com'
 )
 
 const ASSET_BASE = trimTrailingSlash(process.env.VITEPRESS_ASSET_BASE || '')
+const ARTALK_SERVER = process.env.VITEPRESS_ARTALK_SERVER || '/artalk'
+const BUSUANZI_SCRIPT_URL = process.env.VITEPRESS_BUSUANZI_SCRIPT_URL || '/busuanzi/busuanzi.js'
 
 const resolveAbsoluteAssetUrl = (path: string) => {
   if (HTTP_URL_RE.test(path)) return path
@@ -38,10 +40,8 @@ const getImageAlt = (token: Token) =>
   token.children?.map((child) => child.content).join('') || ''
 
 export default defineConfig({
-
   title: 'DeneBlog',
   description: 'Denebora的数字花园',
-
   // 显式要求 VitePress 提取 Markdown 标题供客户端使用
   markdown: {
     theme: {
@@ -82,7 +82,7 @@ export default defineConfig({
 
     // 提取文章信息（如果单篇文章没有填，回退到站点默认值）
     const title = pageData.title || 'DeneBlog'
-    const description = pageData.description || 'Denebora的数字花园'
+    const description = pageData.frontmatter.summary || 'Denebora的数字花园'
 
     // 处理封面图：如果在 frontmatter 中指定了 cover，就拼成绝对路径，否则用默认图
     const imageUrl = pageData.frontmatter.cover
@@ -115,6 +115,8 @@ export default defineConfig({
     siteTitle: "← 离开裏世界",
     siteHostname: SITE_HOSTNAME,
     assetBase: ASSET_BASE,
+    artalkServer: ARTALK_SERVER,
+    busuanziScriptUrl: BUSUANZI_SCRIPT_URL,
     nav: [
       {
         text: '入口',

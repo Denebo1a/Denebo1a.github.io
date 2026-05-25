@@ -11,5 +11,3 @@ cover: /blog/covers/default.png
 ## 图片来源
 可以从这些网站获取高质量的重复平铺图案壁纸！
 - heropatterns: https://heropatterns.com/
--
--

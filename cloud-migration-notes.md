@@ -30,10 +30,12 @@
 
 ## 已落地的统一配置入口
 
-当前仓库已增加两类集中配置：
+当前仓库已增加四类集中配置：
 
 - `VITEPRESS_SITE_HOSTNAME`：站点绝对域名，用于 canonical / OG / Twitter Cards 等绝对 URL 生成
 - `VITEPRESS_ASSET_BASE`：静态资源基址，可为空、可为站内前缀、也可为完整 CDN / OSS URL
+- `VITEPRESS_ARTALK_SERVER`：Artalk 服务端地址
+- `VITEPRESS_BUSUANZI_SCRIPT_URL`：不蒜子统计脚本地址
 
 以及前端组合式入口：
 
@@ -44,6 +46,15 @@
 - 资源 URL 拼接
 - 资源目录 URL 拼接
 - 站点 hostname 读取
+- Artalk 服务地址读取
+- 不蒜子脚本地址读取
+
+当前已确认的外部服务选型：
+
+- **评论系统：Artalk**
+- **访问统计：不蒜子**
+
+后续真正接入时，仍建议把评论服务地址、统计脚本入口等配置继续收口到统一入口，而不是直接散落在组件中。
 
 ## 迁云时通常不需要修改的部分
 

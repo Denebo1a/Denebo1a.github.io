@@ -8,6 +8,15 @@ const ensureLeadingSlash = (value: string) =>
 
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, "");
 
+const resolveOptionalServiceUrl = (value: string) => {
+  const normalized = value.trim();
+  if (!normalized) return "";
+  if (HTTP_URL_RE.test(normalized)) return trimTrailingSlash(normalized);
+
+  const path = ensureLeadingSlash(normalized);
+  return withBase(path).replace(/\/+$/, "");
+};
+
 export function useSiteConfig() {
   const { theme } = useData();
 
@@ -19,6 +28,15 @@ export function useSiteConfig() {
   const siteHostname = computed(() => {
     const raw = String(theme.value.siteHostname ?? "").trim();
     return raw ? trimTrailingSlash(raw) : "";
+  });
+
+  const artalkServer = computed(() =>
+    resolveOptionalServiceUrl(String(theme.value.artalkServer ?? "")),
+  );
+
+  const busuanziScriptUrl = computed(() => {
+    const raw = String(theme.value.busuanziScriptUrl ?? "").trim();
+    return raw || "";
   });
 
   const resolveAssetUrl = (path: string) => {
@@ -42,6 +60,8 @@ export function useSiteConfig() {
   return {
     assetBase,
     siteHostname,
+    artalkServer,
+    busuanziScriptUrl,
     resolveAssetUrl,
     resolveAssetDir,
   };

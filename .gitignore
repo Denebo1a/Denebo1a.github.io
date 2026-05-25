@@ -43,6 +43,9 @@ coverage/
 .temp/
 .cache/
 
-# 8.Claude Code相关
+# 8.Claude Code 相关
 .claude/
 .playwright-mcp/
+
+# 9.Obisidian 相关
+.obsidian/

@@ -1,8 +1,12 @@
 <template>
   <div
-    class="flex items-center gap-1 border-color text-[0.8rem] font-bold text-muted"
+    class="flex items-center gap-1 font-bold text-muted"
+    :class="{
+      'text-xs': props.size === 'small',
+      'text-sm': props.size === 'medium',
+    }"
   >
-    <i-ph-calendar-blank />
+    <i-material-symbols-event-note-rounded />
     <span>
       {{ date }}
     </span>
@@ -12,5 +16,12 @@
 <script setup>
 const props = defineProps({
   date: String,
+  size: {
+    type: String,
+    default: "medium",
+    validator: (value) => {
+      return ["small", "medium"].includes(value);
+    },
+  },
 });
 </script>

@@ -9,20 +9,20 @@
     </div>
 
     <div class="flex flex-1 flex-col border-t border-color p-3 sm:p-5">
-      <div class="mb-2 flex items-center gap-4">
+      <div class="mb-2 flex items-center gap-2">
         <Category :category="post.category" />
         <Date :date="post.date.string" />
       </div>
 
-      <h3 class="mb-2 line-clamp-2 text-lg font-bold text-main">
+      <span class="mb-2 line-clamp-2 text-lg font-bold text-main">
         {{ post.title }}
-      </h3>
+      </span>
 
-      <p class="mb-3 line-clamp-2 text-[0.8rem] leading-relaxed text-muted">
+      <span class="mb-3 line-clamp-2 text-[0.8rem] leading-relaxed text-muted">
         {{ post.summary }}
-      </p>
+      </span>
 
-      <div class="mt-auto flex items-center justify-between">
+      <div class="mt-auto flex flex-col gap-3">
         <div class="flex items-center gap-2">
           <Tag
             v-for="tag in post.tags.slice(0, 2)"
@@ -36,23 +36,42 @@
             class="h-4 w-4 text-muted opacity-50"
           />
         </div>
+        <div class="flex items-center justify-end gap-2">
+          <Count type="comment"
+            ><span class="artalk-comment-count"></span
+          ></Count>
+        </div>
       </div>
     </div>
   </article>
 </template>
 
 <script setup>
-import Tag from "../items/Tag.vue";
+import { onMounted } from "vue";
 import { useRouter } from "vitepress";
 
+import Artalk from "artalk";
+
+import Tag from "../items/Tag.vue";
 import Category from "../items/Category.vue";
 import Date from "../items/Date.vue";
+import Count from "../items/Count.vue";
+import { useSiteConfig } from "../../composables/useSiteConfig";
 
 const router = useRouter();
+const { artalkServer } = useSiteConfig();
 
 const props = defineProps({ post: Object });
 
 const emit = defineEmits(["tagClick"]);
+
+onMounted(() => {
+  Artalk.loadCountWidget({
+    server: artalkServer.value,
+    site: "DeneBlog",
+    countEl: ".artalk-comment-count",
+  });
+});
 
 const handleTagClick = (tag) => {
   emit("tagClick", tag);

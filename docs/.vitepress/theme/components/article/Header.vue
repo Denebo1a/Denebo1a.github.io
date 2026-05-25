@@ -11,13 +11,12 @@
       </h1>
     </div>
     <div class="flex items-center gap-6">
-      <div class="flex items-center gap-2 text-sm font-medium text-muted">
-        <i-ph-calendar-blank-fill />
-        <span>{{ date }}</span>
-      </div>
+      <Date :date="date" />
+      <Count type="visitor"><span id="busuanzi_page_uv"></span></Count>
+      <Count type="view"><span id="busuanzi_page_pv"></span></Count>
+      <Count type="comment"><span class="artalk-comment-count"></span></Count>
 
       <div class="flex items-center gap-2">
-        <i-material-symbols-bookmarks-rounded class="text-sm text-muted" />
         <Tag
           v-for="tag in tags"
           :key="tag"
@@ -35,9 +34,25 @@
 </template>
 
 <script setup>
+import { onMounted } from "vue";
+import Artalk from "artalk";
+
 import Category from "../items/Category.vue";
+import Date from "../items/Date.vue";
 import Tag from "../items/Tag.vue";
 import Divider from "../items/Divider.vue";
+import Count from "../items/Count.vue";
+import { useSiteConfig } from "../../composables/useSiteConfig";
+
+const { artalkServer } = useSiteConfig();
+
+onMounted(() => {
+  Artalk.loadCountWidget({
+    server: artalkServer.value,
+    site: "DeneBlog",
+    countEl: ".artalk-comment-count",
+  });
+});
 
 defineProps({
   category: String,

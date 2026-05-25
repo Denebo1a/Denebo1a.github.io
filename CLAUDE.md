@@ -283,7 +283,8 @@ cover: /resources/basstabs/covers/example.png
 ### 前端迁云注意事项（精简）
 
 - 本项目若继续保持 **VitePress SSG**，未来从 GitHub Pages 迁到云服务器通常属于**部署层迁移**，不应默认重构前端实现。
-- 站点绝对域名通过 `VITEPRESS_SITE_HOSTNAME` 配置；静态资源基址通过 `VITEPRESS_ASSET_BASE` 配置。新增可迁移资源时，优先走 `docs/.vitepress/theme/composables/useSiteConfig.ts`。
+- 站点绝对域名通过 `VITEPRESS_SITE_HOSTNAME` 配置；静态资源基址通过 `VITEPRESS_ASSET_BASE` 配置；Artalk 服务地址通过 `VITEPRESS_ARTALK_SERVER` 配置；不蒜子脚本地址通过 `VITEPRESS_BUSUANZI_SCRIPT_URL` 配置。新增可迁移资源或外部服务时，优先走 `docs/.vitepress/theme/composables/useSiteConfig.ts`。
+- 当前外部服务选型：**评论系统使用 Artalk**，**访问统计使用不蒜子**。后续接入时，应继续保持服务地址与脚本入口集中配置，避免散落在页面组件中。
 - 优先清理 `docs/.vitepress/config.mts` 中对当前域名的写死配置，并避免把 GitHub Pages 假设写入组件逻辑。
 - 未来若接入评论、统计、对象存储/CDN，应将**服务地址**与**静态资源基址**集中配置，避免散落在页面组件中。
 - 重点排查可能影响迁移的路径耦合：SEO 绝对链接、`base` 路径、封面/头像/alphatab/soundfont 等静态资源引用。

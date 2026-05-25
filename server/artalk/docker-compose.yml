@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  artalk:
+    container_name: artalk
+    image: artalk/artalk-go
+    restart: unless-stopped
+    volumes:
+      - ./data:/data
+    env_file:
+      - ../.env
+    environment:
+      - TZ=${TZ}
+      - ATK_LOCALE=zh-CN
+      - ATK_SITE_DEFAULT=DeneBlog
+      - ATK_SITE_URL=${SITE_URL}
+
+    networks:
+      - web-gateway
+
+networks:
+  web-gateway:
+    external: true

@@ -7,7 +7,7 @@
         <License />
       </div>
       <div class="flex items-center gap-2">
-        <SocialAccountLink
+        <SocialAccountLinkButton
           v-for="item in referenceLinks"
           :key="item.url"
           :url="item.url"
@@ -35,7 +35,7 @@ import QQIcon from "~icons/ant-design/qq-outlined";
 import EmailIcon from "~icons/material-symbols/attach-email";
 import XIcon from "~icons/ant-design/x-outlined";
 
-import SocialAccountLink from "./items/SocialAccountLink.vue";
+import SocialAccountLinkButton from "./items/SocialAccountLinkButton.vue";
 
 const referenceLinks = [
   {
