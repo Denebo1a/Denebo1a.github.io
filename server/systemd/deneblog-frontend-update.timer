@@ -1,0 +1,10 @@
+[Unit]
+Description=Run DeneBlog frontend updater every 5 minutes
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Unit=deneblog-frontend-update.service
+
+[Install]
+WantedBy=timers.target

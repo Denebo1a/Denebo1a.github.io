@@ -44,6 +44,16 @@
   color: var(--color-text-muted);
 }
 
+.vp-doc figure,
+.article-content figure {
+  margin: 2rem 0;
+}
+
+.vp-doc figure > img,
+.article-content figure > img {
+  display: block;
+}
+
 .article-content :is(h2, h3, h4, h5, h6) {
   scroll-margin-top: 96px;
 }
