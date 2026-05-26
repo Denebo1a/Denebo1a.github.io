@@ -3,7 +3,7 @@
 ## 项目概述
 
 **DeneBlog** 是一个基于 VitePress 的个人博客，采用完全自定义主题（无 VitePress 默认主题），
-部署在 GitHub Pages（`https://Denebo1a.github.io`）。
+当前部署在 Ubuntu 云服务器（`https://denebora.top`），通过 Docker + nginx 提供服务。
 
 ---
 
@@ -24,7 +24,7 @@
 | 代码格式化 | Prettier + prettier-plugin-tailwindcss | ^3.8.1 |
 | 乐谱渲染 | @coderline/alphatab | ^1.8.2 |
 | 构建 | Vite（VitePress 内置） | - |
-| 部署 | GitHub Actions → GitHub Pages | - |
+| 部署 | GitHub Actions → 阿里云 ACR → Ubuntu Docker + nginx | - |
 
 图标在组件中以 `i-` 前缀直接使用（如 `<i-ph-house />`），由 `IconsResolver` + `unplugin-icons` 自动解析，无需手动 import。
 
@@ -95,9 +95,20 @@ Blog-CC/
 │           └── utils/
 │               ├── format.ts     # formatDate(raw) → { time, string }（中文格式）
 │               └── copyText.ts   # 复制到剪贴板（Clipboard API + execCommand fallback）
+├── server/
+│   ├── .env                      # 云服务器运行时环境变量（SITE_URL / TZ / FRONTEND_IMAGE）
+│   ├── docker-compose.yml        # 云服务器聚合编排入口（nginx / frontend / artalk / redis / bsz）
+│   ├── frontend/
+│   │   └── nginx.conf            # 前端静态站点 nginx 配置（含 .mjs/.wasm MIME 修正）
+│   ├── nginx/
+│   │   └── conf.d/
+│   │       └── proxy.conf        # 网关 nginx：80→443 跳转、HTTPS 终止、/artalk 与 /busuanzi 反代
+│   ├── artalk/
+│   └── busuanzi/
+├── Dockerfile.frontend           # 前端镜像构建：Node 构建 + nginx 静态发布
 ├── tailwind.config.js            # Tailwind 配置（CSS 变量语义别名、Typography 接管）
 ├── postcss.config.js
-└── .github/workflows/deploy.yml  # CI/CD：push main → npm ci → build → GitHub Pages
+└── .github/workflows/deploy.yml  # CI/CD：push main → build frontend image → push 到阿里云 ACR
 ```
 
 ---
@@ -236,8 +247,9 @@ cover: /resources/basstabs/covers/example.png
 - 不再依赖 `@coderline/alphatab-vite` 参与 VitePress 构建流程
 - `docs/.vitepress/config.mts` 中通过 `optimizeDeps.exclude: ['@coderline/alphatab']` 避免 dev 阶段 dep optimizer 误处理 alphaTab
 - `SheetPlayer.vue` 不直接从 npm 包运行时入口推导 worker，而是从 `docs/public/alphatab/` 下的站内静态 ESM 文件动态导入
-- `docs/public/alphatab/alphaTab.mjs` 与其同目录下的 `alphaTab.core.mjs / alphaTab.worker.mjs / alphaTab.worklet.mjs` 一起发布到 GitHub Pages，确保 `import.meta.url` 能正确解析 worker/worklet 相对路径
+- `docs/public/alphatab/alphaTab.mjs` 与其同目录下的 `alphaTab.core.mjs / alphaTab.worker.mjs / alphaTab.worklet.mjs` 一起发布到站内静态目录，由 frontend nginx 直接提供
 - 字体与音源均走站内静态资源：`/font/`、`/soundfont/sonivox.sf3`
+- `server/frontend/nginx.conf` 需要显式为 `.mjs` 返回 `application/javascript`、为 `.wasm` 返回 `application/wasm`，否则浏览器会因 MIME 不匹配拒绝加载 alphaTab 模块
 
 ### 为什么这样做
 
@@ -249,7 +261,7 @@ cover: /resources/basstabs/covers/example.png
 
 移除插件后虽然 build 成功，但线上 `alphaTab.worker.mjs` 会请求到错误的打包路径（如 `/assets/chunks/alphaTab.worker.mjs`），导致 worker 挂起、播放器长期停留在初始化状态、`soundfont` 也不会开始加载。
 
-将 alphaTab 运行时文件镜像到 `docs/public/alphatab/` 后，worker/worklet 路径由浏览器基于真实静态文件 URL 解析，适配 GitHub Pages，避免了 VitePress + alphaTab worker 插件兼容性问题。
+将 alphaTab 运行时文件镜像到 `docs/public/alphatab/` 后，worker/worklet 路径由浏览器基于真实静态文件 URL 解析，避免了 VitePress + alphaTab worker 插件兼容性问题；迁移到云服务器后，frontend nginx 仍需正确返回 `.mjs` 模块 MIME，才能正常动态导入 `alphaTab.mjs`。
 
 ### 新增/保留文件
 
@@ -276,19 +288,55 @@ cover: /resources/basstabs/covers/example.png
 ## CI/CD
 
 - 触发条件：push 到 `main` 分支，或 GitHub Actions 手动触发
-- Node 版本：24，使用 `npm ci`（锁版本）
-- 构建命令：`npm run docs:build`（输出到 `docs/.vitepress/dist`）
-- 部署目标：GitHub Pages（使用 `actions/deploy-pages@v4`）
+- Workflow：`.github/workflows/deploy.yml`
+- 构建环境：`ubuntu-latest` + Docker Buildx
+- 构建镜像：`Dockerfile.frontend`
+- 构建参数来自根目录 `.env.production`：
+  - `VITEPRESS_SITE_HOSTNAME`
+  - `VITEPRESS_ASSET_BASE`
+  - `VITEPRESS_ARTALK_SERVER`
+  - `VITEPRESS_BUSUANZI_SCRIPT_URL`
+  - `FRONTEND_IMAGE`
+- 镜像仓库：阿里云 ACR（Actions Secrets: `ACR_REGISTRY` / `ACR_USERNAME` / `ACR_PASSWORD`）
+- 当前策略：仅构建并推送前端镜像，使用 `latest` 标签；云服务器侧通过 `server/.env` 中的 `FRONTEND_IMAGE` 拉取并运行
 
-### 前端迁云注意事项（精简）
+### 当前云服务器部署结构
 
-- 本项目若继续保持 **VitePress SSG**，未来从 GitHub Pages 迁到云服务器通常属于**部署层迁移**，不应默认重构前端实现。
+- 站点公网域名：`https://denebora.top`
+- `server/docker-compose.yml` 为统一入口，服务包括：
+  - `nginx`：外层网关，负责 HTTPS 终止与反向代理
+  - `frontend`：前端静态站点容器
+  - `artalk`：评论服务
+  - `redis`：不蒜子依赖
+  - `bsz`：不蒜子后端
+- `server/.env` 负责运行时配置：
+  - `SITE_URL`
+  - `TZ`
+  - `FRONTEND_IMAGE`
+- `server/nginx/conf.d/proxy.conf` 当前职责：
+  - `80` → 301 跳转到 `443`
+  - `443` → 提供 HTTPS
+  - `/` → `frontend:80`
+  - `/artalk/` → `artalk:23366/`
+  - `/busuanzi/busuanzi.js` → `frontend:80`
+  - `/busuanzi/api` → `bsz:8080/api`
+- `server/frontend/nginx.conf` 当前职责：
+  - 提供 VitePress 静态产物
+  - 为 `.mjs` 返回 `application/javascript`
+  - 为 `.wasm` 返回 `application/wasm`
+
+### 配置约束与迁移经验
+
+- 本项目继续保持 **VitePress SSG**，本次迁移属于部署层迁移，不应默认重构前端实现。
 - 站点绝对域名通过 `VITEPRESS_SITE_HOSTNAME` 配置；静态资源基址通过 `VITEPRESS_ASSET_BASE` 配置；Artalk 服务地址通过 `VITEPRESS_ARTALK_SERVER` 配置；不蒜子脚本地址通过 `VITEPRESS_BUSUANZI_SCRIPT_URL` 配置。新增可迁移资源或外部服务时，优先走 `docs/.vitepress/theme/composables/useSiteConfig.ts`。
 - 当前外部服务选型：**评论系统使用 Artalk**，**访问统计使用不蒜子**。后续接入时，应继续保持服务地址与脚本入口集中配置，避免散落在页面组件中。
-- 优先清理 `docs/.vitepress/config.mts` 中对当前域名的写死配置，并避免把 GitHub Pages 假设写入组件逻辑。
-- 未来若接入评论、统计、对象存储/CDN，应将**服务地址**与**静态资源基址**集中配置，避免散落在页面组件中。
+- 前端运行时代码中不得写死 `http://` 服务地址；评论、统计、alphaTab 等资源统一走同域相对路径，避免 mixed-content。
+- 不蒜子必须区分：
+  - `/busuanzi/busuanzi.js` 是前端静态脚本
+  - `/busuanzi/api` 是后端接口
+  不能把整个 `/busuanzi/` 无差别反代到后端，否则脚本会返回 HTML/错误页并导致浏览器报错。
 - 重点排查可能影响迁移的路径耦合：SEO 绝对链接、`base` 路径、封面/头像/alphatab/soundfont 等静态资源引用。
-- 迁移后的主要成本通常在**反代、域名、HTTPS、对象存储、动态服务整合**，而不是 VitePress 主题或 Markdown 内容本身。
+- 迁移后的主要成本通常在**反代、域名、HTTPS、镜像发布、动态服务整合**，而不是 VitePress 主题或 Markdown 内容本身。
 
 ---
 

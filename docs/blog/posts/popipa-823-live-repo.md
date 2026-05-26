@@ -12,7 +12,7 @@ cover: /blog/covers/default.png
 
 对于我来说，这些悲喜杂陈的回忆里，最闪耀的，或许是从去年开始，跑邦邦活动的经历。
 
-![惠惠 with 夕阳 & 东方体育中心](/blog/popipa-823-live-repo/otae-with-oriental-sports-center.jpg)
+![东方体育中心，入场前，with惠惠](https://cdn.denebora.top/blog/popipa-823-live-repo/20260526210847415.jpg)
 
 「本日は、誠に、ありがとうございます!」
 
@@ -36,5 +36,6 @@ cover: /blog/covers/default.png
 
 第一次提前一个多月磨洋工做出来的无料，终于也发了出去，还从大家那里收到了超多特别美丽的无料，幸福感max了🥺
 
-![免费吧唧](/blog/popipa-823-live-repo/free-badge.jpg)
+![无料吧唧](https://cdn.denebora.top/blog/popipa-823-live-repo/20260526212701447.jpg)
+
 
