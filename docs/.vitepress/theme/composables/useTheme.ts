@@ -72,20 +72,26 @@ const applyThemeToDocument = (themeId: ThemeId) => {
   if (!isClient()) return
 
   const root = document.documentElement
+  root.classList.add('theme-switching')
 
   if (themeId === DEFAULT_THEME) {
     root.removeAttribute('data-theme')
     root.classList.remove('dark')
-    return
-  }
-
-  root.setAttribute('data-theme', themeId)
-
-  if (themeId === 'dark') {
-    root.classList.add('dark')
   } else {
-    root.classList.remove('dark')
+    root.setAttribute('data-theme', themeId)
+
+    if (themeId === 'dark') {
+      root.classList.add('dark')
+    } else {
+      root.classList.remove('dark')
+    }
   }
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      root.classList.remove('theme-switching')
+    })
+  })
 }
 
 const persistTheme = (themeId: ThemeId) => {

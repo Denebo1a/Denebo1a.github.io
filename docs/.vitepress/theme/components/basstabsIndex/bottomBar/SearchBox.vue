@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-[1rem] border border-color bg-card px-3 py-2 shadow-card">
+  <div class="rounded-full border border-color bg-card px-3 py-1.5 shadow-card">
     <div class="flex items-center gap-2">
       <Transition name="fade-slide">
         <span
@@ -23,11 +23,11 @@
         @update:model-value="setSearchQuery"
         placeholder="搜索歌曲名称/艺术家名称..."
         clearable
-        class="!w-[600px]"
+        class="!w-[400px]"
       />
 
       <button
-        class="rounded-[1rem] p-2 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-brand-light hover:text-brand active:scale-100"
+        class="rounded-[1rem] p-1 transition-all duration-200 ease-in-out hover:scale-110 hover:bg-brand-light hover:text-brand active:scale-100"
       >
         <i-ph-magnifying-glass-bold />
       </button>

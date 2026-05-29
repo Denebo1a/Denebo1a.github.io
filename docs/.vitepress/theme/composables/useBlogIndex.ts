@@ -1,5 +1,6 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { data as allPosts } from '../../../blog/posts.data'
+import { formatMonthLabel } from '../utils/format'
 
 export type BlogPostItem = {
   title: string
@@ -17,6 +18,13 @@ export type BlogPostItem = {
 const DEFAULT_CATEGORY = '全部'
 const DEFAULT_LAYOUT = 'grid'
 const DEFAULT_SORT = 'date'
+const PAGE_SIZE = 12
+
+type BlogPostMonthGroup = {
+  monthKey: string
+  monthLabel: string
+  posts: BlogPostItem[]
+}
 
 const searchQueryInput = ref('')
 const searchQuery = ref('')
@@ -25,6 +33,7 @@ const dateRange = ref<string[]>([])
 const selectedCategory = ref(DEFAULT_CATEGORY)
 const selectedLayout = ref(DEFAULT_LAYOUT)
 const selectedSort = ref(DEFAULT_SORT)
+const currentPage = ref(1)
 
 const categories = computed(() => {
   const categoryCounts = (allPosts as BlogPostItem[]).reduce<Record<string, number>>((acc, post) => {
@@ -86,9 +95,37 @@ const filteredPosts = computed(() => {
   })
 })
 
-const postsViewKey = computed(() =>
+const totalPosts = computed(() => filteredPosts.value.length)
+
+const totalPages = computed(() => Math.max(1, Math.ceil(totalPosts.value / PAGE_SIZE)))
+
+const paginatedPosts = computed(() => {
+  const startIndex = (currentPage.value - 1) * PAGE_SIZE
+  return filteredPosts.value.slice(startIndex, startIndex + PAGE_SIZE)
+})
+
+const paginatedMonthGroups = computed<BlogPostMonthGroup[]>(() => {
+  return paginatedPosts.value.reduce<BlogPostMonthGroup[]>((groups, post) => {
+    const { monthKey, monthLabel } = formatMonthLabel(post.date.time)
+    const lastGroup = groups[groups.length - 1]
+
+    if (lastGroup?.monthKey === monthKey) {
+      lastGroup.posts.push(post)
+      return groups
+    }
+
+    groups.push({
+      monthKey,
+      monthLabel,
+      posts: [post],
+    })
+
+    return groups
+  }, [])
+})
+
+const filterViewKey = computed(() =>
   JSON.stringify({
-    layout: selectedLayout.value,
     sort: selectedSort.value,
     category: selectedCategory.value,
     search: searchQuery.value,
@@ -98,8 +135,23 @@ const postsViewKey = computed(() =>
   }),
 )
 
+const postsViewKey = computed(() =>
+  JSON.stringify({
+    layout: selectedLayout.value,
+    currentPage: currentPage.value,
+    pageSize: PAGE_SIZE,
+    view: filterViewKey.value,
+    posts: paginatedPosts.value.map((post) => post.url),
+  }),
+)
+
+const resetPagination = () => {
+  currentPage.value = 1
+}
+
 const applySearchQuery = () => {
   searchQuery.value = searchQueryInput.value
+  resetPagination()
 }
 
 const setSearchQueryInput = (value: string) => {
@@ -108,14 +160,17 @@ const setSearchQueryInput = (value: string) => {
 
 const setTagQuery = (value: string[]) => {
   tagQuery.value = [...value]
+  resetPagination()
 }
 
 const setDateRange = (value: string[]) => {
   dateRange.value = [...value]
+  resetPagination()
 }
 
 const setSelectedCategory = (value: string) => {
   selectedCategory.value = value
+  resetPagination()
 }
 
 const setSelectedLayout = (value: string) => {
@@ -124,6 +179,12 @@ const setSelectedLayout = (value: string) => {
 
 const setSelectedSort = (value: string) => {
   selectedSort.value = value
+  resetPagination()
+}
+
+const setCurrentPage = (value: number) => {
+  const nextPage = Math.min(Math.max(1, value), totalPages.value)
+  currentPage.value = nextPage
 }
 
 const appendTagQuery = (tag: string) => {
@@ -143,7 +204,14 @@ const resetBlogIndexState = () => {
   searchQuery.value = ''
   tagQuery.value = []
   dateRange.value = []
+  resetPagination()
 }
+
+watchEffect(() => {
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value
+  }
+})
 
 export const useBlogIndex = () => ({
   searchQueryInput,
@@ -153,9 +221,16 @@ export const useBlogIndex = () => ({
   selectedCategory,
   selectedLayout,
   selectedSort,
+  currentPage,
+  pageSize: PAGE_SIZE,
   categories,
   tags,
   filteredPosts,
+  totalPosts,
+  totalPages,
+  paginatedPosts,
+  paginatedMonthGroups,
+  filterViewKey,
   postsViewKey,
   applySearchQuery,
   setSearchQueryInput,
@@ -165,6 +240,8 @@ export const useBlogIndex = () => ({
   setSelectedCategory,
   setSelectedLayout,
   setSelectedSort,
+  setCurrentPage,
+  resetPagination,
   handleTagClick,
   resetBlogIndexState,
 })

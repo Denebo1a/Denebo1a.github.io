@@ -3,8 +3,11 @@
   <template v-else>
     <BackgroundCover />
     <ContextMenu />
-    <LoadingOverlay :visible="isRouteLoading" />
+    <LoadingOverlay
+      :visible="isRouteLoading && isRouteLoadingOverlayEnabled"
+    />
     <ImagePreviewOverlay />
+    <GlobalSettings />
     <div
       class="relative z-0 flex h-screen flex-col overflow-hidden bg-transparent font-sans"
     >
@@ -15,7 +18,9 @@
         class="custom-scrollbar w-full flex-1 overflow-y-auto"
       >
         <div class="flex min-h-full flex-col">
-          <div class="relative flex-1 px-20 py-10">
+          <div
+            class="relative flex-1 px-4 py-2 md:px-10 md:py-5 lg:px-20 lg:py-10"
+          >
             <Transition name="page-fade" mode="out-in">
               <div :key="route.path">
                 <HomeView v-if="frontmatter.layout === 'home'" />
@@ -37,6 +42,16 @@
             </Transition>
             <Transition name="fade">
               <BottomBar v-if="frontmatter.layout === 'basstabs-index'" />
+            </Transition>
+            <Transition name="fade">
+              <FloatingPagination
+                v-if="frontmatter.layout === 'blog-index' && totalPages > 1"
+                :current-page="currentPage"
+                :page-size="pageSize"
+                :total="totalPosts"
+                :total-pages="totalPages"
+                @current-change="setCurrentPage"
+              />
             </Transition>
             <ToolBar />
           </div>
@@ -64,17 +79,24 @@ import SiteFooter from "./components/SiteFooter.vue";
 import ToolBar from "./components/overlays/ToolBar.vue";
 import BottomBar from "./components/basstabsIndex/BottomBar.vue";
 import SideBar from "./components/basstabsIndex/SideBar.vue";
+import FloatingPagination from "./components/blogIndex/FloatingPagination.vue";
 import ContextMenu from "./components/overlays/ContextMenu.vue";
-import LoadingOverlay from "./components/LoadingOverlay.vue";
+import LoadingOverlay from "./components/overlays/LoadingOverlay.vue";
 import ImagePreviewOverlay from "./components/overlays/ImagePreviewOverlay.vue";
+import GlobalSettings from "./components/modals/GlobalSettings.vue";
 import { useTheme } from "./composables/useTheme";
+import { usePreferences } from "./composables/usePreferences";
 import { useScrollPersistence } from "./composables/useScrollPersistence";
+import { useBlogIndex } from "./composables/useBlogIndex";
 
 import DefaultTheme from "vitepress/theme";
 
 const { frontmatter } = useData();
 const route = useRoute();
 const { initTheme } = useTheme();
+const { isRouteLoadingOverlayEnabled, initPreferences } = usePreferences();
+const { currentPage, pageSize, totalPosts, totalPages, setCurrentPage } =
+  useBlogIndex();
 const {
   bindScrollRoot,
   unbindScrollRoot,
@@ -103,15 +125,27 @@ const clearRouteLoadingTimer = () => {
 
 const showRouteLoading = () => {
   clearRouteLoadingTimer();
+
+  if (!isRouteLoadingOverlayEnabled.value) {
+    isRouteLoading.value = false;
+    return;
+  }
+
   routeLoadingStartedAt = performance.now();
   isRouteLoading.value = true;
 };
 
 const hideRouteLoading = () => {
+  clearRouteLoadingTimer();
+
+  if (!isRouteLoadingOverlayEnabled.value) {
+    isRouteLoading.value = false;
+    return;
+  }
+
   const elapsed = performance.now() - routeLoadingStartedAt;
   const remaining = Math.max(0, ROUTE_LOADING_MIN_DURATION - elapsed);
 
-  clearRouteLoadingTimer();
   routeLoadingTimer = window.setTimeout(() => {
     isRouteLoading.value = false;
     routeLoadingTimer = null;
@@ -164,6 +198,7 @@ const handleHashChange = () => {
 
 onMounted(async () => {
   initTheme();
+  initPreferences();
   bindScrollRoot(getScrollRoot());
   await restorePageState();
   window.addEventListener("hashchange", handleHashChange);
@@ -191,7 +226,9 @@ watch(
 
     if (typeof window !== "undefined") {
       await nextTick();
-      await new Promise((resolve) => window.setTimeout(resolve, PAGE_TRANSITION_DURATION));
+      await new Promise((resolve) =>
+        window.setTimeout(resolve, PAGE_TRANSITION_DURATION),
+      );
       await new Promise((resolve) => requestAnimationFrame(() => resolve()));
       globalThis.__refreshBusuanzi?.();
     }

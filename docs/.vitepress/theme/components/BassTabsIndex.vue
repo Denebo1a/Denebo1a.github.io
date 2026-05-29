@@ -1,14 +1,54 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount } from "vue";
+import { nextTick, onBeforeUnmount, onMounted, watch } from "vue";
 import BasstabCard from "./basstabsIndex/BasstabCard.vue";
 import { useBassTabsIndex } from "../composables/useBassTabsIndex";
+import { useScrollPersistence } from "../composables/useScrollPersistence";
 import Empty from "./items/Empty.vue";
 
-const { filteredTabs, resetBassTabsIndexState } = useBassTabsIndex();
+const {
+  filteredTabs,
+  paginatedTabs,
+  currentPage,
+  filterViewKey,
+  tabsViewKey,
+  resetBassTabsIndexState,
+} = useBassTabsIndex();
 
-const tabsViewKey = computed(() =>
-  JSON.stringify(filteredTabs.value.map((tab) => tab.url)),
+const { scrollToTop } = useScrollPersistence();
+
+let hasMounted = false;
+
+const scrollListToTop = async () => {
+  if (!hasMounted) {
+    return;
+  }
+
+  await nextTick();
+  scrollToTop();
+};
+
+watch(currentPage, async (nextPage, previousPage) => {
+  if (nextPage === previousPage) {
+    return;
+  }
+
+  await scrollListToTop();
+});
+
+watch(
+  () => filterViewKey.value,
+  async (nextKey, previousKey) => {
+    if (!hasMounted || !previousKey || nextKey === previousKey) {
+      return;
+    }
+
+    await scrollListToTop();
+  },
 );
+
+onMounted(() => {
+  hasMounted = true;
+});
 
 onBeforeUnmount(() => {
   resetBassTabsIndexState();
@@ -28,7 +68,7 @@ onBeforeUnmount(() => {
               class="grid grid-cols-2 gap-6 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6"
             >
               <BasstabCard
-                v-for="tab in filteredTabs"
+                v-for="tab in paginatedTabs"
                 :key="tab.url"
                 :tab="tab"
               />

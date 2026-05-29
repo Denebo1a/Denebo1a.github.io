@@ -3,8 +3,8 @@
     <div class="flex h-full items-center justify-between">
       <div class="flex items-center gap-2">
         <Author />
-        <Divider :vertical="true" :dashed="false" margin="mx-2" />
-        <License />
+        <Divider :vertical="true" :dashed="false" margin="mx-1" />
+        <ICPFiling />
       </div>
       <div class="flex items-center gap-2">
         <SocialAccountLinkButton
@@ -16,7 +16,7 @@
       </div>
       <div class="flex items-center gap-2">
         <PoweredBy />
-        <Divider :vertical="true" :dashed="false" margin="mx-2" />
+        <Divider :vertical="true" :dashed="false" margin="mx-1" />
         <InspiredBy />
       </div>
     </div>
@@ -36,6 +36,7 @@ import EmailIcon from "~icons/material-symbols/attach-email";
 import XIcon from "~icons/ant-design/x-outlined";
 
 import SocialAccountLinkButton from "./items/SocialAccountLinkButton.vue";
+import ICPFiling from "./items/ICPFiling.vue";
 
 const referenceLinks = [
   {

@@ -70,11 +70,7 @@ const activeTheme = computed(
           "
         >
           <div class="flex items-center gap-3">
-            <component
-              :is="theme.icon"
-              class="h-4 w-4"
-              :style="theme.id === 'dark' ? {} : { color: theme.color }"
-            />
+            <component :is="theme.icon" class="h-4 w-4" />
             {{ theme.name }}
           </div>
           <i-ph-check-bold class="h-4 w-4" v-if="currentTheme === theme.id" />

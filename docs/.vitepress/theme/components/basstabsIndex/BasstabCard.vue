@@ -3,12 +3,15 @@ import { computed } from "vue";
 import OverflowMenu from "./OverflowMenu.vue";
 import type { BassTabItem } from "../../composables/useBassTabsIndex";
 import Category from "../items/Category.vue";
+import { useSiteConfig } from "../../composables/useSiteConfig";
 
 const props = defineProps<{
   tab: BassTabItem;
 }>();
 
-const hasCover = computed(() => Boolean(props.tab.cover));
+const { resolveAssetUrl } = useSiteConfig();
+const coverUrl = computed(() => resolveAssetUrl(props.tab.cover || ""));
+const hasCover = computed(() => Boolean(coverUrl.value));
 </script>
 
 <template>
@@ -24,7 +27,7 @@ const hasCover = computed(() => Boolean(props.tab.cover));
         >
           <img
             v-if="hasCover"
-            :src="tab.cover"
+            :src="coverUrl"
             :alt="tab.title"
             class="h-full w-full object-cover"
           />

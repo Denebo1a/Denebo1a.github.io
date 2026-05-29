@@ -7,7 +7,7 @@
     ></span>
 
     <img
-      src="/avatar.png"
+      :src="avatarUrl"
       @click="handleSecretClick"
       alt="Denebora"
       class="relative z-10 rounded-full bg-card object-cover shadow-card transition-all group-hover:shadow-none"
@@ -17,12 +17,15 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { ElMessage } from "element-plus";
 
 import { useRouter } from "vitepress";
+import { useSiteConfig } from "../../composables/useSiteConfig";
 
 const router = useRouter();
+const { resolveAssetUrl } = useSiteConfig();
+const avatarUrl = computed(() => resolveAssetUrl("/avatar.png"));
 const clickCount = ref(0);
 let clickTimer = null;
 

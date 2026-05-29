@@ -71,6 +71,7 @@ import { useRoute, useRouter } from "vitepress";
 import { data as allPosts } from "../../../../blog/posts.data";
 import { copyTextToClipboard } from "../../utils/copyText";
 import { useTheme } from "../../composables/useTheme";
+import { usePreferences } from "../../composables/usePreferences";
 import { useScrollPersistence } from "../../composables/useScrollPersistence";
 import backIcon from "~icons/material-symbols/arrow-back-ios-new-rounded";
 import forwardIcon from "~icons/material-symbols/arrow-forward-ios-rounded";
@@ -109,6 +110,7 @@ const context = reactive({
 });
 
 const { cycleTheme, initTheme } = useTheme();
+const { isCustomContextMenuEnabled, initPreferences } = usePreferences();
 const { scrollToTop } = useScrollPersistence();
 const searchEngines = {
   bing: "https://cn.bing.com/search?q=",
@@ -443,7 +445,12 @@ const clampMenuPosition = (clientX, clientY) => {
 };
 
 const openMenu = async (event) => {
-  if (event.ctrlKey || window.innerWidth < 768) return;
+  if (
+    !isCustomContextMenuEnabled.value ||
+    event.ctrlKey ||
+    window.innerWidth < 768
+  )
+    return;
 
   event.preventDefault();
   resolveContext(event.target);
@@ -471,6 +478,7 @@ const handleKeydown = (event) => {
 
 onMounted(() => {
   initTheme();
+  initPreferences();
   window.addEventListener("contextmenu", openMenu);
   window.addEventListener("keydown", handleKeydown);
   window.addEventListener("resize", closeMenu);

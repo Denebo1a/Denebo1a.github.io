@@ -1,4 +1,4 @@
-import { computed, ref } from 'vue'
+import { computed, ref, watchEffect } from 'vue'
 import { data as allTabs } from '../../../basstabs/basstabs.data'
 
 export type BassTabItem = {
@@ -24,10 +24,12 @@ export type BassTabLinkItem = {
 }
 
 const DEFAULT_GENRE = '全部'
+const PAGE_SIZE = 30
 
 const searchQuery = ref('')
 const selectedGenre = ref(DEFAULT_GENRE)
 const selectedArtist = ref('')
+const currentPage = ref(1)
 
 const genres = ['全部', '虚拟歌手', '偶像音乐企划', '邦摇',] as const
 
@@ -72,43 +74,100 @@ const filteredTabs = computed(() => {
   })
 })
 
+const totalTabs = computed(() => filteredTabs.value.length)
+
+const totalPages = computed(() => Math.max(1, Math.ceil(totalTabs.value / PAGE_SIZE)))
+
+const paginatedTabs = computed(() => {
+  const startIndex = (currentPage.value - 1) * PAGE_SIZE
+  return filteredTabs.value.slice(startIndex, startIndex + PAGE_SIZE)
+})
+
+const filterViewKey = computed(() =>
+  JSON.stringify({
+    search: searchQuery.value,
+    genre: selectedGenre.value,
+    artist: selectedArtist.value,
+    tabs: filteredTabs.value.map((tab) => tab.url),
+  }),
+)
+
+const tabsViewKey = computed(() =>
+  JSON.stringify({
+    currentPage: currentPage.value,
+    pageSize: PAGE_SIZE,
+    view: filterViewKey.value,
+    tabs: paginatedTabs.value.map((tab) => tab.url),
+  }),
+)
+
+const resetPagination = () => {
+  currentPage.value = 1
+}
+
+const setCurrentPage = (value: number) => {
+  const nextPage = Math.min(Math.max(1, value), totalPages.value)
+  currentPage.value = nextPage
+}
+
 const setSearchQuery = (value: string) => {
   searchQuery.value = value
+  resetPagination()
 }
 
 const setSelectedGenre = (value: string) => {
   selectedGenre.value = value
+  resetPagination()
 }
 
 const setSelectedArtist = (value: string) => {
   selectedArtist.value = value
+  resetPagination()
 }
 
 const toggleArtist = (artist: string) => {
   selectedArtist.value = selectedArtist.value === artist ? '' : artist
+  resetPagination()
 }
 
 const clearArtist = () => {
   selectedArtist.value = ''
+  resetPagination()
 }
 
 const resetBassTabsIndexState = () => {
   searchQuery.value = ''
   selectedGenre.value = DEFAULT_GENRE
   selectedArtist.value = ''
+  resetPagination()
 }
+
+watchEffect(() => {
+  if (currentPage.value > totalPages.value) {
+    currentPage.value = totalPages.value
+  }
+})
 
 export const useBassTabsIndex = () => ({
   searchQuery,
   selectedGenre,
   selectedArtist,
+  currentPage,
+  pageSize: PAGE_SIZE,
   genres,
   artists,
   filteredTabs,
+  totalTabs,
+  totalPages,
+  paginatedTabs,
+  filterViewKey,
+  tabsViewKey,
   buildTabLinks,
   setSearchQuery,
   setSelectedGenre,
   setSelectedArtist,
+  setCurrentPage,
+  resetPagination,
   toggleArtist,
   clearArtist,
   resetBassTabsIndexState,

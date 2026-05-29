@@ -7,7 +7,7 @@
     <div
       class="aspect-video w-full shrink-0 overflow-hidden bg-alt md:aspect-auto md:w-72 lg:w-80"
     >
-      <img :src="post.cover" class="h-full w-full object-cover" />
+      <img :src="coverUrl" class="h-full w-full object-cover" />
     </div>
 
     <div class="flex flex-1 flex-col p-3 sm:p-5">
@@ -46,15 +46,19 @@
 </template>
 
 <script setup>
+import { computed } from "vue";
 import Tag from "../items/Tag.vue";
 import { useRouter } from "vitepress";
 
 import Category from "../items/Category.vue";
 import Date from "../items/Date.vue";
+import { useSiteConfig } from "../../composables/useSiteConfig";
 
 const router = useRouter();
+const { resolveAssetUrl } = useSiteConfig();
 
 const props = defineProps({ post: Object });
+const coverUrl = computed(() => resolveAssetUrl(props.post?.cover || ""));
 
 const emit = defineEmits(["tagClick"]);
 

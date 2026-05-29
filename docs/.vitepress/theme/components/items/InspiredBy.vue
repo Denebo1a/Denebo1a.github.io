@@ -20,7 +20,7 @@
       rel="noopener noreferrer"
       @mouseenter="isHovered = true"
       @mouseleave="isHovered = false"
-      class="group relative inline-flex flex-1 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-[0.5rem] bg-alt p-1 px-2 py-1 text-muted transition-all duration-300 ease-in-out hover:bg-brand-light hover:text-main"
+      class="group relative inline-flex flex-1 cursor-pointer items-center justify-center gap-1 overflow-hidden rounded-[0.5rem] bg-alt px-2 py-1 text-muted transition-all duration-300 ease-in-out hover:bg-brand-light hover:text-brand"
     >
       <div class="relative flex h-6 flex-1 items-center overflow-hidden">
         <span

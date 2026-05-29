@@ -1,17 +1,23 @@
 <template>
-  <button class="minimal-settings-btn" aria-label="设置">
+  <button
+    type="button"
+    class="minimal-settings-btn"
+    aria-label="设置"
+    aria-haspopup="dialog"
+    :aria-expanded="settingsState.isOpen"
+    @click="openGlobalSettings"
+  >
     <i-material-symbols-settings class="settings-icon text-sm text-muted" />
   </button>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import {
+  openGlobalSettings,
+  useGlobalSettings,
+} from "../../composables/useGlobalSettings";
 
-defineProps({
-  isHeaderTransparent: Boolean,
-});
-
-const isSettingsOpen = ref(false);
+const { settingsState } = useGlobalSettings();
 </script>
 
 <style scoped>

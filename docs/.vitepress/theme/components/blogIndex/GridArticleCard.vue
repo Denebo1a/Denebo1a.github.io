@@ -5,10 +5,10 @@
     class="group flex h-full cursor-pointer flex-col overflow-hidden rounded-[1rem] border border-color bg-card shadow-card transition-colors duration-300 ease-in-out hover:border-brand"
   >
     <div class="aspect-[16/9] overflow-hidden bg-alt">
-      <img :src="post.cover" class="h-full w-full object-cover" />
+      <img :src="coverUrl" class="h-full w-full object-cover" />
     </div>
 
-    <div class="flex flex-1 flex-col border-t border-color p-3 sm:p-5">
+    <div class="flex flex-1 flex-col border-t border-color p-4">
       <div class="mb-2 flex items-center gap-2">
         <Category :category="post.category" />
         <Date :date="post.date.string" />
@@ -36,18 +36,13 @@
             class="h-4 w-4 text-muted opacity-50"
           />
         </div>
-        <div class="flex items-center justify-end gap-2">
-          <Count type="comment"
-            ><span class="artalk-comment-count"></span
-          ></Count>
-        </div>
       </div>
     </div>
   </article>
 </template>
 
 <script setup>
-import { onMounted } from "vue";
+import { computed, onMounted } from "vue";
 import { useRouter } from "vitepress";
 
 import Artalk from "artalk";
@@ -59,9 +54,10 @@ import Count from "../items/Count.vue";
 import { useSiteConfig } from "../../composables/useSiteConfig";
 
 const router = useRouter();
-const { artalkServer } = useSiteConfig();
+const { artalkServer, resolveAssetUrl } = useSiteConfig();
 
 const props = defineProps({ post: Object });
+const coverUrl = computed(() => resolveAssetUrl(props.post?.cover || ""));
 
 const emit = defineEmits(["tagClick"]);
 

@@ -14,14 +14,8 @@
           >
             {{ post.title }}
           </span>
-          <div class="flex items-center gap-2">
+          <div class="flex items-center">
             <Date :date="post.date.string" size="small" />
-            <Count type="comment" size="small"
-              ><span
-                class="artalk-comment-count"
-                :data-page-key="post.url"
-              ></span
-            ></Count>
           </div>
         </div>
       </a>

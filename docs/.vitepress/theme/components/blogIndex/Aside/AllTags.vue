@@ -1,5 +1,5 @@
 <template>
-  <div class="tags-cloud s-card">
+  <div class="tags-cloud">
     <div
       ref="tagsWrapper"
       class="all-tags"

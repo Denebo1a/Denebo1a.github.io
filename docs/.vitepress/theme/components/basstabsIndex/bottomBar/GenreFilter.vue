@@ -1,5 +1,5 @@
 <template>
-  <div class="rounded-[1rem] border border-color bg-card px-3 py-2 shadow-card">
+  <div class="rounded-full border border-color bg-card px-3 py-2 shadow-card">
     <div class="flex items-center">
       <i-material-symbols-filter-alt-outline class="h-6 w-6 text-brand" />
       <Divider :vertical="true" margin="mx-2" />
