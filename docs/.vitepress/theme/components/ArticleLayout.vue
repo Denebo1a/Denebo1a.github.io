@@ -23,7 +23,7 @@
     </div>
 
     <aside class="flex w-full flex-col gap-4 md:w-[20%]">
-      <ProfileCard />
+      <!-- <ProfileCard /> -->
       <div class="sticky top-4 flex w-full flex-col gap-4">
         <Toc
           :headers="headers"
