@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { ref, onMounted, onBeforeUnmount } from "vue";
 import { withBase } from "vitepress";
-import { useSiteConfig } from "../composables/useSiteConfig";
 
 const props = defineProps<{
   src: string;
 }>();
-
-const { resolveAssetDir, resolveAssetUrl } = useSiteConfig();
 
 // --- 状态 ---
 const wrapper = ref<HTMLElement | null>(null);
@@ -63,7 +60,7 @@ onMounted(async () => {
   settings.player.scrollMode = at.ScrollMode.OffScreen;
   settings.player.scrollElement = wrapper.value!;
   // 强制指定底层字体与音源库目录
-  settings.core.fontDirectory = "/font";
+  settings.core.fontDirectory = "/font/";
   settings.player.soundFont = "/soundfont/sonivox.sf3";
 
   const api = new at.AlphaTabApi(wrapper.value!, settings);
