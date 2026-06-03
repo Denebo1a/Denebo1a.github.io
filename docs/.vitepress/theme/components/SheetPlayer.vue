@@ -45,7 +45,7 @@ const onSeekEnd = (e: Event) => {
 onMounted(async () => {
   if (import.meta.env.SSR) return;
 
-  const scriptFile = resolveAssetUrl("/alphatab/alphaTab.mjs");
+  const scriptFile = "/alphatab/alphaTab.mjs";
   const at = await import(/* @vite-ignore */ scriptFile);
 
   const settings = new at.Settings();
@@ -63,8 +63,8 @@ onMounted(async () => {
   settings.player.scrollMode = at.ScrollMode.OffScreen;
   settings.player.scrollElement = wrapper.value!;
   // 强制指定底层字体与音源库目录
-  settings.core.fontDirectory = resolveAssetDir("/font");
-  settings.player.soundFont = resolveAssetUrl("/soundfont/sonivox.sf3");
+  settings.core.fontDirectory = "/font";
+  settings.player.soundFont = "/soundfont/sonivox.sf3";
 
   const api = new at.AlphaTabApi(wrapper.value!, settings);
   apiRef = api;
