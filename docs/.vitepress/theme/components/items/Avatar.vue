@@ -25,7 +25,7 @@ import { useSiteConfig } from "../../composables/useSiteConfig";
 
 const router = useRouter();
 const { resolveAssetUrl } = useSiteConfig();
-const avatarUrl = computed(() => resolveAssetUrl("/avatar.png"));
+const avatarUrl = computed(() => resolveAssetUrl("/shared/avatar.png"));
 const clickCount = ref(0);
 let clickTimer = null;
 
